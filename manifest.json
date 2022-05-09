@@ -1,0 +1,11 @@
+{
+  "name": "figma-gather",
+  "id": "widget-id-4Kr2YLz0AX",
+  "api": "1.0.0",
+  "editorType": ["figjam"],
+  "permissions": ["activeusers"],
+  "containsWidget": true,
+  "main": "dist/code.js",
+  "ui": "dist/index.html",
+  "widgetApi": "1.0.0"
+}
