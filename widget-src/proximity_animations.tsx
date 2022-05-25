@@ -1,17 +1,9 @@
-const { widget } = figma
-const {
-  useSyncedState,
-  useStickable,
-  useSyncedMap,
-  usePropertyMenu,
-  useWidgetId
-} = widget
-const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
-
 import { DEBUG } from './code'
 import { isOverlapping } from './lib'
 
-const FPS = 30
+// Proximity animations will loop an animation when a
+// player is nearby
+const ANIMATE_ONCE_EVERY_N_FRAMES = 5
 
 export function proximityAnimations(
   characterRect: WidgetNode,
@@ -80,7 +72,7 @@ function incrementAnimations() {
     if (DEBUG) console.log(currentAnimations[nodeId])
 
     currentAnimations[nodeId] = {
-      framesSinceLast: (framesSinceLast + 1) % 5,
+      framesSinceLast: (framesSinceLast + 1) % ANIMATE_ONCE_EVERY_N_FRAMES,
       nextChildIndex:
         framesSinceLast === 0
           ? (nextChildIndex + 1) % numChildren
