@@ -7,36 +7,38 @@ import {
   getFacingFromMovementDirection,
   getMovementDirectionVector,
   getSprite,
-  MOVEMENT_SPEED,
-  updateCamera
+  movement,
+  MOVEMENT_SPEED
 } from './movement'
-import { useStickableAnimation } from './stickable_animation'
+import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
-import { outfits, useWardrobe, Wardrobe } from './wardrobe'
+import { outfits, useWardrobe, wardrobe } from './wardrobe'
 
-const DEBUG = true // Add options to debug the widget
+export const DEBUG = true // Add options to debug the widget
 
 const FPS = 30
-let myInterval: number
 let lastSpriteIndex = 0
 
-type Route = 'character' | 'spawner' | 'wardrobe' | 'animation'
+function nextFrame(props: {
+  widgetNode: WidgetNode
+  setFacing: (facing: Facing) => void
+}) {
+  const { widgetNode, setFacing } = props
+  const nodes = figma.currentPage.findAll(() => true)
+  const proximityAnimationNodes = nodes.filter(
+    (n) => n.name[0] === '⏱' && ['FRAME', 'GROUP'].includes(n.type)
+  ) as (FrameNode | GroupNode)[]
+  const collisionNodes = nodes.filter((n) => n.name[0] === '🛑')
+  const wardrobeNodes = nodes.filter((n) => n.name[0] === '🏠')
+  console.log(proximityAnimationNodes)
 
-function Widget() {
-  const [route, setRoute] = useSyncedState<Route>('route', 'character')
-  switch (route) {
-    case 'character':
-      return <Character />
-    // case 'spawner':
-    //   return <Spawner />
-    case 'wardrobe':
-      return <Wardrobe />
-    // case 'spawner':
-    //   return <Animation />
-  }
+  lastSpriteIndex = movement({ widgetNode, setFacing, lastSpriteIndex })
+  proximityAnimations(widgetNode, proximityAnimationNodes)
+  wardrobe(wardrobeNodes)
 }
 
-function Character() {
+function Widget() {
+  // todo: if wardrobeIndex == -1, create a node that spawns widgets?
   const widgetId = widget.useWidgetId()
   const [wardrobeIndex, setWardrobeIndex] = useSyncedState<number>(
     'wardrobe',
@@ -45,31 +47,14 @@ function Character() {
 
   let propertyMenu: WidgetPropertyMenuItem[] = []
   if (DEBUG) {
-    propertyMenu = [
-      {
-        itemType: 'action',
-        propertyName: 'route',
-        tooltip: 'Create a wardrobe'
-      }
-    ]
   }
   useWardrobe(wardrobeIndex, propertyMenu)
 
   usePropertyMenu(propertyMenu, ({ propertyName, propertyValue }) => {
-    if (propertyName === 'route') {
-      const widgetNode = figma.getNodeById(widgetId) as WidgetNode
-      if (widgetNode) {
-        figma.currentPage.selection = [widgetNode]
-      }
-      const wardrobe = widgetNode.cloneWidget({ route: 'wardrobe' })
-      wardrobe.setPluginData('figma-gather-route', 'wardrobe')
-    }
     setWardrobeIndex(outfits.findIndex((o) => o.option === propertyValue))
   })
 
   const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')
-
-  // useStickableAnimation()
 
   const activate = () => {
     const widgetNode = figma.getNodeById(widgetId) as WidgetNode
@@ -77,42 +62,13 @@ function Character() {
       figma.currentPage.selection = [widgetNode]
     }
 
-    updateCamera(widgetNode)
-    myInterval = setInterval(() => {
-      if (
-        distance(figma.viewport.center, midpoint(widgetNode)) > MOVEMENT_SPEED
-      ) {
-        figma.currentPage.selection = []
-        setFacing('down')
-        figma.closePlugin(
-          'Stopping character movement to allow free camera. Click character to resume'
-        )
-        clearInterval(myInterval)
-        return
-      }
-      if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
-        clearInterval(myInterval)
-        setFacing('down')
-        figma.closePlugin(
-          'Character is no longer selected and has stopped moving. Click character to resume'
-        )
-        return
-      }
-
-      // handle cursor position not found
-      const movementDirection = getMovementDirectionVector(
-        widgetNode,
-        figma.activeUsers[0].position!
-      )
-      setFacing(getFacingFromMovementDirection(movementDirection))
-
-      lastSpriteIndex = (lastSpriteIndex + 1) % 8
-      widgetNode.x += movementDirection.x
-      widgetNode.y += movementDirection.y
-      updateCamera(widgetNode)
+    figma.viewport.center = midpoint(widgetNode) // update camera
+    setInterval(() => {
+      nextFrame({ widgetNode, setFacing })
     }, 1000 / FPS)
     return new Promise<void>(() => {})
   }
+
   return (
     <AutoLayout
       direction="horizontal"

@@ -26,6 +26,42 @@ import {
 } from './vector'
 import { Facing } from './lib'
 export const MOVEMENT_SPEED = 12
+
+export function movement(props: {
+  widgetNode: WidgetNode
+  setFacing: (facing: Facing) => void
+  lastSpriteIndex: number
+}) {
+  const { widgetNode, setFacing, lastSpriteIndex } = props
+  if (distance(figma.viewport.center, midpoint(widgetNode)) > MOVEMENT_SPEED) {
+    figma.currentPage.selection = []
+    setFacing('down')
+    figma.closePlugin(
+      'Stopping character movement to allow free camera. Click character to resume'
+    )
+    return lastSpriteIndex
+  }
+  if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
+    setFacing('down')
+    figma.closePlugin(
+      'Character is no longer selected and has stopped moving. Click character to resume'
+    )
+    return lastSpriteIndex
+  }
+
+  // handle cursor position not found
+  const movementDirection = getMovementDirectionVector(
+    widgetNode,
+    figma.activeUsers[0].position!
+  )
+  setFacing(getFacingFromMovementDirection(movementDirection))
+
+  widgetNode.x += movementDirection.x
+  widgetNode.y += movementDirection.y
+  figma.viewport.center = midpoint(widgetNode) // update camera
+  return (lastSpriteIndex + 1) % 8
+}
+
 // Movement is constrained to 8 directions?
 export function getMovementDirectionVector(from: Rect, to: Vector) {
   const fromMidpoint = midpoint(from)
@@ -48,17 +84,13 @@ export function getFacingFromMovementDirection(direction: Vector): Facing {
   return vectorToFacing(direction)
 }
 
-export function updateCamera(player: Rect) {
-  figma.viewport.center = midpoint(player)
-}
-
 export function getSprite(
   facing: string,
   frame: number,
   wardrobeIndex: number
 ) {
   if (wardrobeIndex === 0) {
-    if (frame === 0) {
+    if (frame < 4) {
       switch (facing) {
         case 'down':
           return greendown0
@@ -82,7 +114,7 @@ export function getSprite(
       }
     }
   } else {
-    if (frame === 0) {
+    if (frame < 4) {
       switch (facing) {
         case 'down':
           return bluedown0
