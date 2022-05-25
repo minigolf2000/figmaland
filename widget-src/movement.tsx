@@ -27,7 +27,7 @@ import {
 import { Facing } from './lib'
 
 // some arbitrary ratio to map distance from mouse from avatar to movement speed
-export const MOVEMENT_RATIO = 30 
+export const MOVEMENT_RATIO = 30
 // min distance the mouse needs to be from center of avatar to move
 export const MOVEMENT_MIN_DISTANCE = 50
 // arbitrary max speed, can adjust based on art
@@ -39,7 +39,9 @@ export function movement(props: {
   lastSpriteIndex: number
 }) {
   const { widgetNode, setFacing, lastSpriteIndex } = props
-  if (distance(figma.viewport.center, midpoint(widgetNode)) > MOVEMENT_MAX_SPEED) {
+  if (
+    distance(figma.viewport.center, midpoint(widgetNode)) > MOVEMENT_MAX_SPEED
+  ) {
     figma.currentPage.selection = []
     setFacing('down')
     figma.closePlugin(
@@ -62,21 +64,32 @@ export function movement(props: {
   )
   setFacing(getFacingFromMovementDirection(movementDirection))
 
-  widgetNode.x += movementDirection.x
-  widgetNode.y += movementDirection.y
-  figma.viewport.center = midpoint(widgetNode) // update camera
-  return (lastSpriteIndex + 1) % 8
+  if (movementDirection.x !== 0 || movementDirection.y !== 0) {
+    widgetNode.x += movementDirection.x
+    widgetNode.y += movementDirection.y
+    figma.viewport.center = midpoint(widgetNode) // update camera
+    return (lastSpriteIndex + 1) % 8
+  } else {
+    // Returning 0 here forces the same neutral stance frame when not moving
+    return 0
+  }
 }
 
 // Movement is constrained to 8 directions?
 export function getMovementDirectionVector(from: Rect, to: Vector) {
   const fromMidpoint = midpoint(from)
 
-  const dist = distance({x: fromMidpoint.x, y: fromMidpoint.y}, {x: to.x, y: to.y})
+  const dist = distance(
+    { x: fromMidpoint.x, y: fromMidpoint.y },
+    { x: to.x, y: to.y }
+  )
   let movementSpeed
   if (dist < MOVEMENT_MIN_DISTANCE) {
     movementSpeed = 0
-  } else if (dist < MOVEMENT_RATIO * MOVEMENT_MAX_SPEED + MOVEMENT_MIN_DISTANCE) {
+  } else if (
+    dist <
+    MOVEMENT_RATIO * MOVEMENT_MAX_SPEED + MOVEMENT_MIN_DISTANCE
+  ) {
     movementSpeed = dist / MOVEMENT_RATIO
   } else {
     movementSpeed = MOVEMENT_MAX_SPEED

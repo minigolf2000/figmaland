@@ -7,7 +7,7 @@ import {
   getFacingFromMovementDirection,
   getMovementDirectionVector,
   getSprite,
-  movement,
+  movement
 } from './movement'
 import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
@@ -29,7 +29,6 @@ function nextFrame(props: {
   ) as (FrameNode | GroupNode)[]
   const collisionNodes = nodes.filter((n) => n.name[0] === '🛑')
   const wardrobeNodes = nodes.filter((n) => n.name[0] === '🏠')
-  console.log(proximityAnimationNodes)
 
   lastSpriteIndex = movement({ widgetNode, setFacing, lastSpriteIndex })
   proximityAnimations(widgetNode, proximityAnimationNodes)
