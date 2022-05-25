@@ -26,12 +26,28 @@ import {
 } from './vector'
 import { Facing } from './lib'
 
-// some arbitrary ratio to map distance from mouse from avatar to movement speed
-export const MOVEMENT_RATIO = 30
 // min distance the mouse needs to be from center of avatar to move
 export const MOVEMENT_MIN_DISTANCE = 50
+
+export enum MovementMode {
+  Foot,
+  Bicycle
+}
+
+let movementMode = MovementMode.Foot
+export function setMovementMode(mode: MovementMode) {
+  movementMode = mode
+}
+
+// some arbitrary ratio to map distance from mouse from avatar to movement speed
+function movementRatio() {
+  return movementMode === MovementMode.Foot ? 30 : 10
+}
+
 // arbitrary max speed, can adjust based on art
-export const MOVEMENT_MAX_SPEED = 12
+function movementMaxSpeed() {
+  return movementMode === MovementMode.Foot ? 12 : 36
+}
 
 export function movement(props: {
   widgetNode: WidgetNode
@@ -40,7 +56,7 @@ export function movement(props: {
 }) {
   const { widgetNode, setFacing, lastSpriteIndex } = props
   if (
-    distance(figma.viewport.center, midpoint(widgetNode)) > MOVEMENT_MAX_SPEED
+    distance(figma.viewport.center, midpoint(widgetNode)) > movementMaxSpeed()
   ) {
     figma.currentPage.selection = []
     setFacing('down')
@@ -88,11 +104,11 @@ export function getMovementDirectionVector(from: Rect, to: Vector) {
     movementSpeed = 0
   } else if (
     dist <
-    MOVEMENT_RATIO * MOVEMENT_MAX_SPEED + MOVEMENT_MIN_DISTANCE
+    movementRatio() * movementMaxSpeed() + MOVEMENT_MIN_DISTANCE
   ) {
-    movementSpeed = dist / MOVEMENT_RATIO
+    movementSpeed = dist / movementRatio()
   } else {
-    movementSpeed = MOVEMENT_MAX_SPEED
+    movementSpeed = movementMaxSpeed()
   }
 
   const movementDirectionVector = multiply(

@@ -1,5 +1,6 @@
 const { widget } = figma
 const { useSyncedState, useSyncedMap, usePropertyMenu, useWidgetId } = widget
+import { bikeZone } from './bike_zone'
 import down0 from './img/basic-down-0.png'
 import { Facing } from './lib'
 const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
@@ -29,9 +30,11 @@ function nextFrame(props: {
   ) as (FrameNode | GroupNode)[]
   const collisionNodes = nodes.filter((n) => n.name[0] === '🛑')
   const wardrobeNodes = nodes.filter((n) => n.name[0] === '🏠')
+  const bikeZoneNodes = nodes.filter((n) => n.name.slice(0, 2) === '🚲')
 
   lastSpriteIndex = movement({ widgetNode, setFacing, lastSpriteIndex })
   proximityAnimations(widgetNode, proximityAnimationNodes)
+  bikeZone(widgetNode, bikeZoneNodes)
   wardrobe(wardrobeNodes)
 }
 
