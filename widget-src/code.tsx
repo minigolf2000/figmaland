@@ -8,7 +8,6 @@ import {
   getMovementDirectionVector,
   getSprite,
   movement,
-  MOVEMENT_SPEED
 } from './movement'
 import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
