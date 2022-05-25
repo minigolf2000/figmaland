@@ -54,7 +54,7 @@ interface AnimationState {
   numChildren: number
   animationNode: FrameNode | GroupNode
 }
-let currentAnimations: { [nodeId: string]: AnimationState } = {}
+export let currentAnimations: { [nodeId: string]: AnimationState } = {}
 
 function incrementAnimations() {
   for (const nodeId of Object.keys(currentAnimations)) {

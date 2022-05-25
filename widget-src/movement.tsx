@@ -25,6 +25,7 @@ import {
   vectorToFacing
 } from './vector'
 import { Facing } from './lib'
+import { currentAnimations } from './proximity_animations'
 
 // some arbitrary ratio to map distance from mouse from avatar to movement speed
 export const MOVEMENT_RATIO = 30
@@ -32,6 +33,12 @@ export const MOVEMENT_RATIO = 30
 export const MOVEMENT_MIN_DISTANCE = 50
 // arbitrary max speed, can adjust based on art
 export const MOVEMENT_MAX_SPEED = 12
+
+figma.on("close", () => {
+  for (const nodeId of Object.keys(currentAnimations)) {
+    currentAnimations[nodeId].animationNode.setPluginData('animation','')
+  }
+})
 
 export function movement(props: {
   widgetNode: WidgetNode
