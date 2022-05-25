@@ -1,11 +1,5 @@
 const { widget } = figma
-const {
-  useSyncedState,
-  useStickable,
-  useSyncedMap,
-  usePropertyMenu,
-  useWidgetId
-} = widget
+const { useSyncedState, useSyncedMap, usePropertyMenu, useWidgetId } = widget
 import down0 from './img/basic-down-0.png'
 import { Facing } from './lib'
 const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
@@ -18,18 +12,64 @@ import {
 } from './movement'
 import { useStickableAnimation } from './stickable_animation'
 import { distance, midpoint } from './vector'
-import { useWardrobe } from './wardrobe'
+import { outfits, useWardrobe, Wardrobe } from './wardrobe'
+
+const DEBUG = true // Add options to debug the widget
 
 const FPS = 30
 let myInterval: number
 let lastSpriteIndex = 0
 
+type Route = 'character' | 'spawner' | 'wardrobe' | 'animation'
+
 function Widget() {
+  const [route, setRoute] = useSyncedState<Route>('route', 'character')
+  switch (route) {
+    case 'character':
+      return <Character />
+    // case 'spawner':
+    //   return <Spawner />
+    case 'wardrobe':
+      return <Wardrobe />
+    // case 'spawner':
+    //   return <Animation />
+  }
+}
+
+function Character() {
   const widgetId = widget.useWidgetId()
-  const wardrobeIndex = useWardrobe()
+  const [wardrobeIndex, setWardrobeIndex] = useSyncedState<number>(
+    'wardrobe',
+    0
+  )
+
+  let propertyMenu: WidgetPropertyMenuItem[] = []
+  if (DEBUG) {
+    propertyMenu = [
+      {
+        itemType: 'action',
+        propertyName: 'route',
+        tooltip: 'Create a wardrobe'
+      }
+    ]
+  }
+  useWardrobe(wardrobeIndex, propertyMenu)
+
+  usePropertyMenu(propertyMenu, ({ propertyName, propertyValue }) => {
+    if (propertyName === 'route') {
+      const widgetNode = figma.getNodeById(widgetId) as WidgetNode
+      if (widgetNode) {
+        figma.currentPage.selection = [widgetNode]
+      }
+      const wardrobe = widgetNode.cloneWidget({ route: 'wardrobe' })
+      wardrobe.setPluginData('figma-gather-route', 'wardrobe')
+    }
+    setWardrobeIndex(outfits.findIndex((o) => o.option === propertyValue))
+  })
+
   const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')
 
-  useStickableAnimation()
+  // useStickableAnimation()
 
   const activate = () => {
     const widgetNode = figma.getNodeById(widgetId) as WidgetNode
@@ -94,7 +134,5 @@ function Widget() {
   )
 }
 widget.register(Widget)
-console.log('apowijf')
-figma.on('timerstart', () => console.log('test'))
 
 // how to respond to selection change

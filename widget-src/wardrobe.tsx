@@ -1,8 +1,10 @@
+import wardrobeBG from './img/wardrobe.png'
 const { widget } = figma
+const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
 const {
   useSyncedState,
   useStickable,
-  useSyncedMap,
+  useStickableHost,
   usePropertyMenu,
   useWidgetId
 } = widget
@@ -12,26 +14,32 @@ export const outfits: WidgetPropertyMenuColorSelectorOption[] = [
   { tooltip: 'blue', option: '#0083FE' }
 ]
 
-export function useWardrobe() {
-  const [wardrobeIndex, setWardrobeIndex] = useSyncedState<number>(
-    'wardrobe',
-    0
-  )
+export function useWardrobe(
+  wardrobeIndex: number,
+  propertyMenu: WidgetPropertyMenuItem[]
+) {
+  const widgetId = widget.useWidgetId()
+  useStickable(() => {
+    const widget = figma.getNodeById(widgetId) as WidgetNode
+    const { stuckTo } = widget
 
-  usePropertyMenu(
-    [
-      {
+    console.log('stuck')
+    if (stuckTo?.getPluginData('figma-gather-route') === 'wardrobe') {
+      console.log(outfits)
+      propertyMenu.push({
         itemType: 'color-selector',
         propertyName: 'cardColor',
         tooltip: 'Color',
         selectedOption: outfits[wardrobeIndex].option,
         options: outfits
-      }
-    ],
-    ({ propertyValue }) => {
-      setWardrobeIndex(outfits.findIndex((o) => o.option === propertyValue))
+      })
     }
-  )
+  })
+}
 
-  return wardrobeIndex
+export function Wardrobe() {
+  useStickableHost(() => {
+    console.log('hosterino')
+  })
+  return <Image width={512} height={512} src={wardrobeBG} />
 }

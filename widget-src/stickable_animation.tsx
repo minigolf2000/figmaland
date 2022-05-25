@@ -17,7 +17,6 @@ export function useStickableAnimation() {
   const widgetId = widget.useWidgetId()
 
   useStickable(() => {
-    console.log('stickable')
     const widget = figma.getNodeById(widgetId) as WidgetNode
     const { stuckTo } = widget
 
