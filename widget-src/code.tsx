@@ -2,7 +2,7 @@ const { widget } = figma
 const { useSyncedState, useSyncedMap, usePropertyMenu, useWidgetId } = widget
 import { bikeZone } from './bike_zone'
 import down0 from './img/basic-down-0.png'
-import { Facing } from './lib'
+import { Facing, toRect } from './lib'
 const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
 import {
   getFacingFromMovementDirection,
@@ -14,7 +14,7 @@ import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
 import { outfits, useWardrobe, wardrobe } from './wardrobe'
 
-export const DEBUG = true // Add options to debug the widget
+export const DEBUG = false // Add options to debug the widget
 
 const FPS = 30
 let lastSpriteIndex = 0
@@ -24,6 +24,7 @@ function nextFrame(props: {
   setFacing: (facing: Facing) => void
 }) {
   const { widgetNode, setFacing } = props
+  const widgetRect = toRect(widgetNode)
   const nodes = figma.currentPage.findAll(() => true)
   const proximityAnimationNodes = nodes.filter(
     (n) => n.name[0] === '⏱' && ['FRAME', 'GROUP'].includes(n.type)
@@ -32,7 +33,12 @@ function nextFrame(props: {
   const wardrobeNodes = nodes.filter((n) => n.name[0] === '🏠')
   const bikeZoneNodes = nodes.filter((n) => n.name.slice(0, 2) === '🚲')
 
-  lastSpriteIndex = movement({ widgetNode, setFacing, lastSpriteIndex })
+  lastSpriteIndex = movement({
+    widgetNode,
+    widgetRect,
+    setFacing,
+    lastSpriteIndex
+  })
   proximityAnimations(widgetNode, proximityAnimationNodes)
   bikeZone(widgetNode, bikeZoneNodes)
   wardrobe(wardrobeNodes)

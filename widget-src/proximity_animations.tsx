@@ -1,5 +1,5 @@
 import { DEBUG } from './code'
-import { isOverlapping } from './lib'
+import { isOverlapping, toRect } from './lib'
 
 // Proximity animations will loop an animation when a
 // player is nearby
@@ -9,15 +9,19 @@ export function proximityAnimations(
   characterRect: WidgetNode,
   proximityAnimationRects: (FrameNode | GroupNode)[]
 ) {
-  addOrRemoveAnimations(characterRect, proximityAnimationRects)
+  addOrRemoveAnimations(
+    characterRect.id,
+    toRect(characterRect),
+    proximityAnimationRects
+  )
   incrementAnimations()
 }
 
 function addOrRemoveAnimations(
-  characterRect: WidgetNode,
+  widgetId: string,
+  characterRect: Rect,
   proximityAnimationRects: (FrameNode | GroupNode)[]
 ) {
-  const widgetId = characterRect.id
   for (const a of proximityAnimationRects) {
     if (isOverlapping(characterRect, a)) {
       if (!!a.getPluginData('animation')) {
@@ -61,9 +65,6 @@ function incrementAnimations() {
   for (const nodeId of Object.keys(currentAnimations)) {
     const { framesSinceLast, nextChildIndex, numChildren, animationNode } =
       currentAnimations[nodeId]
-
-    if (DEBUG)
-      console.log(nextChildIndex, ((nextChildIndex + 1) % numChildren) - 1)
 
     if (framesSinceLast === 0) {
       animationNode.children[nextChildIndex].visible = false

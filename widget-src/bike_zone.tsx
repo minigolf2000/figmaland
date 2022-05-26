@@ -11,7 +11,6 @@ export function bikeZone(
   bikeZoneRects: SceneNode[]
 ) {
   for (const a of bikeZoneRects) {
-    console.log(bikeZoneRects)
     if (isOverlapping(characterRect, a)) {
       setMovementMode(MovementMode.Bicycle)
     } else {

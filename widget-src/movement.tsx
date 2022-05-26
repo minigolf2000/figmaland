@@ -24,7 +24,7 @@ import {
   normalize,
   vectorToFacing
 } from './vector'
-import { Facing } from './lib'
+import { Facing, toRect } from './lib'
 import { currentAnimations } from './proximity_animations'
 
 // min distance the mouse needs to be from center of avatar to move
@@ -50,20 +50,22 @@ function movementMaxSpeed() {
   return movementMode === MovementMode.Foot ? 12 : 36
 }
 
-figma.on("close", () => {
+figma.on('close', () => {
   for (const nodeId of Object.keys(currentAnimations)) {
-    currentAnimations[nodeId].animationNode.setPluginData('animation','')
+    currentAnimations[nodeId].animationNode.setPluginData('animation', '')
   }
 })
 
 export function movement(props: {
   widgetNode: WidgetNode
+  widgetRect: Rect
   setFacing: (facing: Facing) => void
   lastSpriteIndex: number
 }) {
-  const { widgetNode, setFacing, lastSpriteIndex } = props
+  const { widgetNode, widgetRect, setFacing, lastSpriteIndex } = props
   if (
-    distance(figma.viewport.center, midpoint(widgetNode)) > movementMaxSpeed()
+    distance(figma.viewport.center, midpoint(widgetNode)) >
+    movementMaxSpeed() * 2
   ) {
     figma.currentPage.selection = []
     setFacing('down')
@@ -82,15 +84,21 @@ export function movement(props: {
 
   // handle cursor position not found
   const movementDirection = getMovementDirectionVector(
-    widgetNode,
+    widgetRect,
     figma.activeUsers[0].position!
   )
   setFacing(getFacingFromMovementDirection(movementDirection))
 
   if (movementDirection.x !== 0 || movementDirection.y !== 0) {
-    widgetNode.x += movementDirection.x
-    widgetNode.y += movementDirection.y
-    figma.viewport.center = midpoint(widgetNode) // update camera
+    // This is functionally the same as:
+    // widgetNode.x = x
+    // widgetNode.y = y
+    // But sets them both in 1 Plugin API call instead of 2
+    widgetNode.relativeTransform = [
+      [1, 0, widgetRect.x + movementDirection.x],
+      [0, 1, widgetRect.y + movementDirection.y]
+    ]
+    figma.viewport.center = midpoint(widgetRect) // update camera
     return (lastSpriteIndex + 1) % 8
   } else {
     // Returning 0 here forces the same neutral stance frame when not moving
