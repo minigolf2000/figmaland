@@ -41,7 +41,8 @@ function addOrRemoveAnimations(
         numChildren: a.children.length,
         animationNode: a
       }
-    } else {
+    } else if (!!a.getPluginData('animation')) {
+      a.children[currentAnimations[a.id].nextChildIndex].visible = false
       delete currentAnimations[a.id]
       a.setPluginData('animation', '')
     }
