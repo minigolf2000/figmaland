@@ -77,7 +77,6 @@ function Widget() {
       verticalAlignItems="center"
       height="hug-contents"
       padding={8}
-      fill="#FFFFFF"
       cornerRadius={8}
       spacing={12}
       onClick={activate}
