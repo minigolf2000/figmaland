@@ -6,12 +6,13 @@ import { isOverlapping, toRect } from './lib'
 const ANIMATE_ONCE_EVERY_N_FRAMES = 5
 
 export function proximityAnimations(
-  characterRect: WidgetNode,
+  widgetId: string,
+  characterRect: Rect,
   proximityAnimationRects: (FrameNode | GroupNode)[]
 ) {
   addOrRemoveAnimations(
-    characterRect.id,
-    toRect(characterRect),
+    widgetId,
+    characterRect,
     proximityAnimationRects
   )
   incrementAnimations()

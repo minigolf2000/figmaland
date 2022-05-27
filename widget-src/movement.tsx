@@ -24,7 +24,7 @@ import {
   normalize,
   vectorToFacing
 } from './vector'
-import { Facing, toRect } from './lib'
+import { Facing, isOverlapping, isOverlapping1D, toRect } from './lib'
 import { currentAnimations } from './proximity_animations'
 
 // min distance the mouse needs to be from center of avatar to move
@@ -60,9 +60,12 @@ export function movement(props: {
   widgetNode: WidgetNode
   widgetRect: Rect
   setFacing: (facing: Facing) => void
-  lastSpriteIndex: number
+  lastSpriteIndex: number,
+  collisionNodes: SceneNode[]
 }) {
-  const { widgetNode, widgetRect, setFacing, lastSpriteIndex } = props
+  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionNodes } = props
+
+  // User has panned their camera, let them pan and exit the widget to stop character movement
   if (
     distance(figma.viewport.center, midpoint(widgetNode)) >
     movementMaxSpeed() * 2
@@ -74,6 +77,8 @@ export function movement(props: {
     )
     return lastSpriteIndex
   }
+
+  // Character gets deselected. Exit
   if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
     setFacing('down')
     figma.closePlugin(
@@ -83,20 +88,24 @@ export function movement(props: {
   }
 
   // handle cursor position not found
-  const movementDirection = getMovementDirectionVector(
+  const attemptedMovementVector = getMovementDirectionVector(
     widgetRect,
     figma.activeUsers[0].position!
   )
-  setFacing(getFacingFromMovementDirection(movementDirection))
+  setFacing(getFacingFromMovementDirection(attemptedMovementVector))
 
-  if (movementDirection.x !== 0 || movementDirection.y !== 0) {
+  const movementVector = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionNodes)
+
+  // check collision here
+
+  if (movementVector.x !== 0 || movementVector.y !== 0) {
     // This is functionally the same as:
     // widgetNode.x = x
     // widgetNode.y = y
     // But sets them both in 1 Plugin API call instead of 2
     widgetNode.relativeTransform = [
-      [1, 0, widgetRect.x + movementDirection.x],
-      [0, 1, widgetRect.y + movementDirection.y]
+      [1, 0, widgetRect.x + movementVector.x],
+      [0, 1, widgetRect.y + movementVector.y]
     ]
     figma.viewport.center = midpoint(widgetRect) // update camera
     return (lastSpriteIndex + 1) % 8
@@ -106,7 +115,32 @@ export function movement(props: {
   }
 }
 
-// Movement is constrained to 8 directions?
+
+
+function getMovementVectorRespectingCollision(rect: Rect, vector: Vector, collisionNodes: SceneNode[]) {
+  const newMoveX = getMovePositionRespectingCollision1D(rect.x, rect.x + rect.width, vector.x, collisionNodes, (n: SceneNode) => isOverlapping1D(rect.x, rect.x + rect.width, n.x, n.x + n.width))
+  const newMoveY = getMovePositionRespectingCollision1D(rect.y, rect.y + rect.height, vector.y, collisionNodes, (n: SceneNode) => isOverlapping1D(rect.y, rect.y + rect.height, n.y, n.y + n.height))
+
+  return {x: newMoveX, y: newMoveY}
+}
+
+function getMovePositionRespectingCollision1D(left: number, right: number, move: number, collisionNodes: SceneNode[], filterOverlappingNodesFunc: (n: SceneNode) => boolean) {
+  if (move > 0) {
+    const firstOverlappingNode = collisionNodes.filter(filterOverlappingNodesFunc).sort(n => n.x)
+    if (firstOverlappingNode[0]) {
+      return firstOverlappingNode[0].x - 64 - left
+    }
+  }
+  if (move < 0) {
+    const firstOverlappingNode = collisionNodes.filter(filterOverlappingNodesFunc).sort(n => n.x).reverse()
+    if (firstOverlappingNode[0]) {
+      return right - firstOverlappingNode[0].x - firstOverlappingNode[0].width
+    }
+  }
+  return move
+}
+
+
 export function getMovementDirectionVector(from: Rect, to: Vector) {
   const fromMidpoint = midpoint(from)
 

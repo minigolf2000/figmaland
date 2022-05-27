@@ -12,7 +12,7 @@ import {
 } from './movement'
 import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
-import { outfits, useWardrobe, wardrobe } from './wardrobe'
+import { outfits, wardrobe, wardrobePropertyMenuItem } from './wardrobe'
 
 export const DEBUG = false // Add options to debug the widget
 
@@ -22,41 +22,44 @@ let lastSpriteIndex = 0
 function nextFrame(props: {
   widgetNode: WidgetNode
   setFacing: (facing: Facing) => void
+  inWardrobe: boolean
+  setInWardrobe: (inWardrobe: boolean) => void
 }) {
-  const { widgetNode, setFacing } = props
+  const { widgetNode, setFacing, inWardrobe, setInWardrobe } = props
   const widgetRect = toRect(widgetNode)
   const nodes = figma.currentPage.findAll(() => true)
   const proximityAnimationNodes = nodes.filter(
     (n) => n.name[0] === '⏱' && ['FRAME', 'GROUP'].includes(n.type)
   ) as (FrameNode | GroupNode)[]
-  const collisionNodes = nodes.filter((n) => n.name[0] === '🛑')
-  const wardrobeNodes = nodes.filter((n) => n.name[0] === '🏠')
+  const collisionNodes = nodes.filter((n) => n.name.slice(0, 2) === '🛑')
+  const wardrobeNodes = nodes.filter((n) => n.name.slice(0, 2) === '🏠')
   const bikeZoneNodes = nodes.filter((n) => n.name.slice(0, 2) === '🚲')
 
   lastSpriteIndex = movement({
     widgetNode,
     widgetRect,
     setFacing,
-    lastSpriteIndex
+    lastSpriteIndex,
+    collisionNodes
   })
-  proximityAnimations(widgetNode, proximityAnimationNodes)
-  bikeZone(widgetNode, bikeZoneNodes)
-  wardrobe(wardrobeNodes)
+  proximityAnimations(widgetNode.id,toRect(widgetNode), proximityAnimationNodes)
+  bikeZone(widgetRect, bikeZoneNodes)
+  wardrobe(widgetRect, wardrobeNodes, inWardrobe, setInWardrobe)
 }
 
 function Widget() {
   // todo: if wardrobeIndex == -1, create a node that spawns widgets?
   const widgetId = widget.useWidgetId()
   const [wardrobeIndex, setWardrobeIndex] = useSyncedState<number>(
-    'wardrobe',
+    'wardrobeIndex',
     0
   )
+  const [inWardrobe, setInWardrobe] = useSyncedState<boolean>(
+    'inWardrobe',
+    false
+  )
 
-  let propertyMenu: WidgetPropertyMenuItem[] = []
-  if (DEBUG) {
-  }
-  useWardrobe(wardrobeIndex, propertyMenu)
-
+  const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe ? [wardrobePropertyMenuItem(wardrobeIndex)] : []
   usePropertyMenu(propertyMenu, ({ propertyName, propertyValue }) => {
     setWardrobeIndex(outfits.findIndex((o) => o.option === propertyValue))
   })
@@ -71,28 +74,18 @@ function Widget() {
 
     figma.viewport.center = midpoint(widgetNode) // update camera
     setInterval(() => {
-      nextFrame({ widgetNode, setFacing })
+      nextFrame({ widgetNode, setFacing, inWardrobe, setInWardrobe })
     }, 1000 / FPS)
     return new Promise<void>(() => {})
   }
 
   return (
-    <AutoLayout
-      direction="horizontal"
-      horizontalAlignItems="center"
-      verticalAlignItems="center"
-      height="hug-contents"
-      padding={8}
-      cornerRadius={8}
-      spacing={12}
-      onClick={activate}
-    >
       <Image
+      onClick={activate}
         width={64}
         height={64}
         src={getSprite(facing, lastSpriteIndex, wardrobeIndex)}
       />
-    </AutoLayout>
   )
 }
 widget.register(Widget)

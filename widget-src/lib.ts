@@ -9,6 +9,11 @@ export function isOverlapping(a: Rect, b: Rect) {
   )
 }
 
+export function isOverlapping1D(aLeft: number, aRight: number, bLeft: number, bRight: number)
+{
+  return aLeft < bRight && aRight > bLeft
+}
+
 // Convert to rect for performance. Accessing these fields is expensive
 export function toRect(n: SceneNode): Rect {
   const { x, y, width, height } = n
