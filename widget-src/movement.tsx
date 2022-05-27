@@ -16,6 +16,14 @@ import blueleft1 from './img/blue/basic-left-1.png'
 import blueright1 from './img/blue/basic-right-1.png'
 import blueup1 from './img/blue/basic-up-1.png'
 
+import guydown0 from './img/guy1/basic-down-0.png'
+import guyleft0 from './img/guy1/basic-left-0.png'
+import guyright0 from './img/guy1/basic-right-0.png'
+import guyup0 from './img/guy1/basic-up-0.png'
+import guydown1 from './img/guy1/basic-down-1.png'
+import guyleft1 from './img/guy1/basic-left-1.png'
+import guyright1 from './img/guy1/basic-right-1.png'
+import guyup1 from './img/guy1/basic-up-1.png'
 import {
   distance,
   magnitude,
@@ -187,24 +195,24 @@ export function getSprite(
     if (frame < 4) {
       switch (facing) {
         case 'down':
-          return greendown0
+          return guydown0
         case 'left':
-          return greenleft0
+          return guyleft0
         case 'right':
-          return greenright0
+          return guyright0
         case 'up':
-          return greenup0
+          return guyup0
       }
     } else {
       switch (facing) {
         case 'down':
-          return greendown1
+          return guydown1
         case 'left':
-          return greenleft1
+          return guyleft1
         case 'right':
-          return greenright1
+          return guyright1
         case 'up':
-          return greenup1
+          return guyup1
       }
     }
   } else {
