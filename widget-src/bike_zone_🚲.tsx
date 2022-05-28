@@ -1,5 +1,5 @@
 import { isOverlapping } from './lib'
-import { setMovementMode, MovementMode } from './movement'
+import { setMovementMode, MovementMode } from './movement_🛑'
 
 export function bikeZone(
   characterRect: Rect,

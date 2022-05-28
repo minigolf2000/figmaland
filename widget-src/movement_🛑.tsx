@@ -1,13 +1,12 @@
 import {
   distance,
-  magnitude,
   midpoint,
   multiply,
   normalize,
   vectorToFacing
 } from './vector'
-import { Facing, isOverlapping, isOverlapping1D, toRect } from './lib'
-import { currentAnimations } from './proximity_animations'
+import { Facing, isOverlapping1D } from './lib'
+import { currentAnimations } from './animated_art_⏱'
 
 // min distance the mouse needs to be from center of avatar to move
 export const MOVEMENT_MIN_DISTANCE = 100
@@ -17,7 +16,7 @@ export enum MovementMode {
   Bicycle
 }
 
-let movementMode = MovementMode.Foot
+export let movementMode = MovementMode.Foot
 export function setMovementMode(mode: MovementMode) {
   movementMode = mode
 }
@@ -49,8 +48,9 @@ export function movement(props: {
 
   // User has panned their camera, let them pan and exit the widget to stop character movement
   if (
+    // todo: does this need to account for zoom level?
     distance(figma.viewport.center, midpoint(widgetNode)) >
-    movementMaxSpeed() * 2
+    movementMaxSpeed() * 10
   ) {
     figma.currentPage.selection = []
     setFacing('down')

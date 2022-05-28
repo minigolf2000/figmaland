@@ -1,19 +1,19 @@
 import { DEBUG } from './code'
 import { isOverlapping, toRect } from './lib'
 
-// Proximity animations will loop an animation when a
+// Animated art loops an animation when a
 // player is nearby
 const ANIMATE_ONCE_EVERY_N_FRAMES = 5
 
-export function proximityAnimations(
+export function animatedArt(
   widgetId: string,
   characterRect: Rect,
-  proximityAnimationRects: (FrameNode | GroupNode)[]
+  animatedArtNodes: (FrameNode | GroupNode)[]
 ) {
   addOrRemoveAnimations(
     widgetId,
     characterRect,
-    proximityAnimationRects
+    animatedArtNodes
   )
   incrementAnimations()
 }
@@ -21,10 +21,11 @@ export function proximityAnimations(
 function addOrRemoveAnimations(
   widgetId: string,
   characterRect: Rect,
-  proximityAnimationRects: (FrameNode | GroupNode)[]
+  animatedArtNodes: (FrameNode | GroupNode)[]
 ) {
-  for (const a of proximityAnimationRects) {
-    if (isOverlapping(characterRect, a)) {
+  for (const a of animatedArtNodes) {
+    const aRect = toRect(a)
+    if (isOverlapping(characterRect, aRect)) {
       if (!!a.getPluginData('animation')) {
         break
       }
@@ -46,7 +47,7 @@ function addOrRemoveAnimations(
         numChildren: a.children.length,
         animationNode: a
       }
-    } else if (a.getPluginData('animation') && currentAnimations[a.id]) {
+    } else if (currentAnimations[a.id] && a.getPluginData('animation')) {
       a.children[currentAnimations[a.id].nextChildIndex].visible = false
       delete currentAnimations[a.id]
       a.setPluginData('animation', '')

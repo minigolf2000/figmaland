@@ -1,16 +1,15 @@
 const { widget } = figma
-const { useSyncedState, useSyncedMap, usePropertyMenu, useWidgetId } = widget
-import { bikeZone } from './bike_zone'
-import down0 from './img/basic-down-0.png'
+const { useSyncedState, usePropertyMenu } = widget
+import { bikeZone } from './bike_zone_🚲'
 import { allCharacters, getSprite } from './img/sprites'
 import { Facing, toRect } from './lib'
-const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
+const { Image } = widget
 import {
   movement
-} from './movement'
-import { proximityAnimations } from './proximity_animations'
-import { distance, midpoint } from './vector'
-import { wardrobe, wardrobePropertyMenuItem } from './wardrobe'
+} from './movement_🛑'
+import { animatedArt } from './animated_art_⏱'
+import { midpoint } from './vector'
+import { wardrobe, wardrobePropertyMenuItem } from './wardrobe_🏠'
 
 export const DEBUG = false // Add options to debug the widget
 
@@ -28,7 +27,7 @@ function nextFrame(props: {
   const { widgetNode, setFacing, inWardrobe, setInWardrobe } = props
   const widgetRect = toRect(widgetNode)
   const nodes = figma.currentPage.findAll(() => true)
-  const proximityAnimationNodes = nodes.filter(
+  const animatedArtNodes = nodes.filter(
     (n) => n.name[0] === '⏱' && ['FRAME', 'GROUP'].includes(n.type)
   ) as (FrameNode | GroupNode)[]
   const collisionNodes = nodes.filter((n) => n.name.slice(0, 2) === '🛑')
@@ -42,7 +41,7 @@ function nextFrame(props: {
     lastSpriteIndex,
     collisionNodes
   })
-  proximityAnimations(widgetNode.id,toRect(widgetNode), proximityAnimationNodes)
+  animatedArt(widgetNode.id,toRect(widgetNode), animatedArtNodes)
   bikeZone(widgetRect, bikeZoneNodes)
   wardrobe(widgetRect, wardrobeNodes, inWardrobe, setInWardrobe)
 }
@@ -60,7 +59,7 @@ function Widget() {
   )
 
   const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe ? [wardrobePropertyMenuItem(wardrobeIndex)] : []
-  usePropertyMenu(propertyMenu, ({ propertyName, propertyValue }) => {
+  usePropertyMenu(propertyMenu, ({ propertyValue }) => {
     setWardrobeIndex(allCharacters.findIndex((c) => c.name === propertyValue))
   })
 

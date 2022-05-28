@@ -1,11 +1,16 @@
-import greendown0 from './green/basic-down-0.png'
-import greenleft0 from './green/basic-left-0.png'
-import greenright0 from './green/basic-right-0.png'
-import greenup0 from './green/basic-up-0.png'
-import greendown1 from './green/basic-down-1.png'
-import greenleft1 from './green/basic-left-1.png'
-import greenright1 from './green/basic-right-1.png'
-import greenup1 from './green/basic-up-1.png'
+import { Facing } from '../lib'
+import { MovementMode, movementMode } from '../movement_🛑'
+
+import bikeup1 from './bike/up-1.png'
+import bikeup2 from './bike/up-2.png'
+import bikeup3 from './bike/up-3.png'
+import bikedown1 from './bike/down-1.png'
+import bikedown2 from './bike/down-2.png'
+import bikedown3 from './bike/down-3.png'
+import bikeleft1 from './bike/left-1.png'
+import bikeleft2 from './bike/left-2.png'
+import bikeright1 from './bike/right-1.png'
+import bikeright2 from './bike/right-2.png'
 
 import bluedown0 from './blue/basic-down-0.png'
 import blueleft0 from './blue/basic-left-0.png'
@@ -24,7 +29,6 @@ import guydown1 from './guy1/basic-down-1.png'
 import guyleft1 from './guy1/basic-left-1.png'
 import guyright1 from './guy1/basic-right-1.png'
 import guyup1 from './guy1/basic-up-1.png'
-import { Facing } from '../lib'
 
 type CharacterSprites = {[T in Facing]: string[]}
 interface Character {
@@ -52,6 +56,16 @@ export const guy: Character = {
   }
 }
 
+const bike: Character = {
+  name: '',
+  sprites: {
+    up: [bikeup1, bikeup2, bikeup1, bikeup3],
+    down: [bikedown1, bikedown2, bikedown1, bikedown3],
+    left: [bikeleft1, bikeleft2],
+    right: [bikeright1, bikeright2],
+  }
+}
+
 export const allCharacters = [
   blueLink,
   guy
@@ -62,7 +76,7 @@ export function getSprite(
   lastSpriteIndex: number,
   wardrobeIndex: number,
 ): string {
-  const characterSpritesFacing = allCharacters[wardrobeIndex].sprites[facing]
-  const frameIndex = Math.floor((lastSpriteIndex % 12) * characterSpritesFacing.length / 12)
-  return characterSpritesFacing[frameIndex]
+  const character = movementMode === MovementMode.Bicycle ? bike : allCharacters[wardrobeIndex]
+  const frameIndex = Math.floor((lastSpriteIndex % 12) * character.sprites[facing].length / 12)
+  return character.sprites[facing][frameIndex]
 }

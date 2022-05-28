@@ -14,7 +14,9 @@ export function isOverlapping1D(aLeft: number, aRight: number, bLeft: number, bR
   return aLeft < bRight && aRight > bLeft
 }
 
-// Convert to rect for performance. Accessing these fields is expensive
+// Convert a SceneNode to Rect. Repeatedly accessing SceneNode properties
+// is expensive, so if we need to access these multiple times it's more
+// performant to first clone a Rect that has these properties
 export function toRect(n: SceneNode): Rect {
   const { x, y, width, height } = n
   return { x, y, width, height }
