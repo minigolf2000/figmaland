@@ -1,12 +1,9 @@
 export type Facing = 'up' | 'left' | 'down' | 'right'
 
 export function isOverlapping(a: Rect, b: Rect) {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.height + a.y > b.y
-  )
+  return isOverlapping1D(a.x, a.x + a.width, b.x, b.x + b.width) &&
+    isOverlapping1D(a.y, a.y + a.height, b.y, b.y + b.height)
+
 }
 
 export function isOverlapping1D(aLeft: number, aRight: number, bLeft: number, bRight: number)

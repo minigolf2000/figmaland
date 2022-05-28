@@ -8,9 +8,6 @@ import {
 import { Facing, isOverlapping1D } from './lib'
 import { currentAnimations } from './animated_art_⏱'
 
-// min distance the mouse needs to be from center of avatar to move
-export const MOVEMENT_MIN_DISTANCE = 100
-
 export enum MovementMode {
   Foot,
   Bicycle
@@ -21,9 +18,14 @@ export function setMovementMode(mode: MovementMode) {
   movementMode = mode
 }
 
+// min distance the mouse needs to be from center of avatar to move
+// At zoom level 100%, mouse must be 60 pixels away
+// At zoom level 200%, mouse must be 120 pixels away (which feels the same as at 100%)
+function movementMinDistance() { return 60 / figma.viewport.zoom }
+
 // some arbitrary ratio to map distance from mouse from avatar to movement speed
 function movementRatio() {
-  return movementMode === MovementMode.Foot ? 30 : 10
+  return movementMode === MovementMode.Foot ? 50 : 10
 }
 
 // arbitrary max speed, can adjust based on art
@@ -128,31 +130,17 @@ function getMovePositionRespectingCollision1D(left: number, right: number, move:
 
 export function getMovementDirectionVector(from: Rect, to: Vector) {
   const fromMidpoint = midpoint(from)
+  const mouseDistance = distance(fromMidpoint, to)
 
-  const dist = distance(
-    { x: fromMidpoint.x, y: fromMidpoint.y },
-    { x: to.x, y: to.y }
-  )
-  let movementSpeed
-  if (dist < MOVEMENT_MIN_DISTANCE) {
-    movementSpeed = 0
-  } else if (
-    dist <
-    movementRatio() * movementMaxSpeed() + MOVEMENT_MIN_DISTANCE
-  ) {
-    movementSpeed = dist / movementRatio()
-  } else {
-    movementSpeed = movementMaxSpeed()
+  if (mouseDistance < movementMinDistance()) {
+    return {x: 0, y: 0}
   }
 
-  const movementDirectionVector = multiply(
+  const movementSpeed = Math.min(mouseDistance / movementRatio(), movementMaxSpeed())
+  return multiply(
     normalize({ x: to.x - fromMidpoint.x, y: to.y - fromMidpoint.y }),
     movementSpeed
   )
-
-  return distance(fromMidpoint, to) < 32
-    ? { x: 0, y: 0 }
-    : movementDirectionVector
 }
 
 export function getFacingFromMovementDirection(direction: Vector): Facing {
