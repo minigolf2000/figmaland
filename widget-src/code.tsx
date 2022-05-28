@@ -2,21 +2,21 @@ const { widget } = figma
 const { useSyncedState, useSyncedMap, usePropertyMenu, useWidgetId } = widget
 import { bikeZone } from './bike_zone'
 import down0 from './img/basic-down-0.png'
+import { allCharacters, getSprite } from './img/sprites'
 import { Facing, toRect } from './lib'
 const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget
 import {
-  getFacingFromMovementDirection,
-  getMovementDirectionVector,
-  getSprite,
   movement
 } from './movement'
 import { proximityAnimations } from './proximity_animations'
 import { distance, midpoint } from './vector'
-import { outfits, wardrobe, wardrobePropertyMenuItem } from './wardrobe'
+import { wardrobe, wardrobePropertyMenuItem } from './wardrobe'
 
 export const DEBUG = false // Add options to debug the widget
 
 const FPS = 30
+
+// How does the char know to alternate steps at all if this is not useSyncedState?
 let lastSpriteIndex = 0
 
 function nextFrame(props: {
@@ -61,7 +61,7 @@ function Widget() {
 
   const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe ? [wardrobePropertyMenuItem(wardrobeIndex)] : []
   usePropertyMenu(propertyMenu, ({ propertyName, propertyValue }) => {
-    setWardrobeIndex(outfits.findIndex((o) => o.option === propertyValue))
+    setWardrobeIndex(allCharacters.findIndex((c) => c.name === propertyValue))
   })
 
   const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')

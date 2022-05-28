@@ -1,29 +1,3 @@
-import greendown0 from './img/green/basic-down-0.png'
-import greenleft0 from './img/green/basic-left-0.png'
-import greenright0 from './img/green/basic-right-0.png'
-import greenup0 from './img/green/basic-up-0.png'
-import greendown1 from './img/green/basic-down-1.png'
-import greenleft1 from './img/green/basic-left-1.png'
-import greenright1 from './img/green/basic-right-1.png'
-import greenup1 from './img/green/basic-up-1.png'
-
-import bluedown0 from './img/blue/basic-down-0.png'
-import blueleft0 from './img/blue/basic-left-0.png'
-import blueright0 from './img/blue/basic-right-0.png'
-import blueup0 from './img/blue/basic-up-0.png'
-import bluedown1 from './img/blue/basic-down-1.png'
-import blueleft1 from './img/blue/basic-left-1.png'
-import blueright1 from './img/blue/basic-right-1.png'
-import blueup1 from './img/blue/basic-up-1.png'
-
-import guydown0 from './img/guy1/basic-down-0.png'
-import guyleft0 from './img/guy1/basic-left-0.png'
-import guyright0 from './img/guy1/basic-right-0.png'
-import guyup0 from './img/guy1/basic-up-0.png'
-import guydown1 from './img/guy1/basic-down-1.png'
-import guyleft1 from './img/guy1/basic-left-1.png'
-import guyright1 from './img/guy1/basic-right-1.png'
-import guyup1 from './img/guy1/basic-up-1.png'
 import {
   distance,
   magnitude,
@@ -36,7 +10,7 @@ import { Facing, isOverlapping, isOverlapping1D, toRect } from './lib'
 import { currentAnimations } from './proximity_animations'
 
 // min distance the mouse needs to be from center of avatar to move
-export const MOVEMENT_MIN_DISTANCE = 50
+export const MOVEMENT_MIN_DISTANCE = 100
 
 export enum MovementMode {
   Foot,
@@ -96,9 +70,12 @@ export function movement(props: {
   }
 
   // handle cursor position not found
+  if (!figma.activeUsers[0].position) {
+    throw 'no cursor position found'
+  }
   const attemptedMovementVector = getMovementDirectionVector(
     widgetRect,
-    figma.activeUsers[0].position!
+    figma.activeUsers[0].position
   )
   setFacing(getFacingFromMovementDirection(attemptedMovementVector))
 
@@ -116,7 +93,7 @@ export function movement(props: {
       [0, 1, widgetRect.y + movementVector.y]
     ]
     figma.viewport.center = midpoint(widgetRect) // update camera
-    return (lastSpriteIndex + 1) % 8
+    return (lastSpriteIndex + 1) % 120 // a number that is divisible by 2 and 3
   } else {
     // Returning 0 here forces the same neutral stance frame when not moving
     return 0
@@ -184,60 +161,4 @@ export function getFacingFromMovementDirection(direction: Vector): Facing {
   }
 
   return vectorToFacing(direction)
-}
-
-export function getSprite(
-  facing: string,
-  frame: number,
-  wardrobeIndex: number
-) {
-  if (wardrobeIndex === 0) {
-    if (frame < 4) {
-      switch (facing) {
-        case 'down':
-          return guydown0
-        case 'left':
-          return guyleft0
-        case 'right':
-          return guyright0
-        case 'up':
-          return guyup0
-      }
-    } else {
-      switch (facing) {
-        case 'down':
-          return guydown1
-        case 'left':
-          return guyleft1
-        case 'right':
-          return guyright1
-        case 'up':
-          return guyup1
-      }
-    }
-  } else {
-    if (frame < 4) {
-      switch (facing) {
-        case 'down':
-          return bluedown0
-        case 'left':
-          return blueleft0
-        case 'right':
-          return blueright0
-        case 'up':
-          return blueup0
-      }
-    } else {
-      switch (facing) {
-        case 'down':
-          return bluedown1
-        case 'left':
-          return blueleft1
-        case 'right':
-          return blueright1
-        case 'up':
-          return blueup1
-      }
-    }
-  }
 }
