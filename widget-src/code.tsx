@@ -1,12 +1,13 @@
 const { widget } = figma
-const { useSyncedState, usePropertyMenu } = widget
+const { Image, Frame, useSyncedState, usePropertyMenu } = widget
 import { bikeZone } from './bike_zone_🚲'
-import { allCharacters, getSprite } from './img/sprites'
-import { Facing, toRect } from './lib'
-const { Image } = widget
 import {
-  movement
-} from './movement_🛑'
+  allCharacters,
+  getCharacterSprites,
+  getFrameIndex
+} from './img/sprites'
+import { Facing, toRect } from './lib'
+import { movement } from './movement_🛑'
 import { animatedArt } from './animated_art_⏱'
 import { midpoint } from './vector'
 import { wardrobe, wardrobePropertyMenuItem } from './wardrobe_🏠'
@@ -41,7 +42,7 @@ function nextFrame(props: {
     lastSpriteIndex,
     collisionNodes
   })
-  animatedArt(widgetNode.id,toRect(widgetNode), animatedArtNodes)
+  animatedArt(widgetNode.id, toRect(widgetNode), animatedArtNodes)
   bikeZone(widgetRect, bikeZoneNodes)
   wardrobe(widgetRect, wardrobeNodes, inWardrobe, setInWardrobe)
 }
@@ -58,7 +59,9 @@ function Widget() {
     false
   )
 
-  const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe ? [wardrobePropertyMenuItem(wardrobeIndex)] : []
+  const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe
+    ? [wardrobePropertyMenuItem(wardrobeIndex)]
+    : []
   usePropertyMenu(propertyMenu, ({ propertyValue }) => {
     setWardrobeIndex(allCharacters.findIndex((c) => c.name === propertyValue))
   })
@@ -78,13 +81,64 @@ function Widget() {
     return new Promise<void>(() => {})
   }
 
+  const characterSprites = getCharacterSprites(wardrobeIndex)
+
+  const frameIndex = getFrameIndex(
+    lastSpriteIndex,
+    characterSprites[facing].length
+  )
+
   return (
+    <Frame width={64} height={64} onClick={activate}>
       <Image
-      onClick={activate}
         width={64}
         height={64}
-        src={getSprite(facing, lastSpriteIndex, wardrobeIndex)}
+        src={characterSprites.up[0]}
+        hidden={facing !== 'up' || frameIndex !== 0}
       />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.up[1]}
+        hidden={facing !== 'up' || frameIndex !== 1}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.down[0]}
+        hidden={facing !== 'down' || frameIndex !== 0}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.down[1]}
+        hidden={facing !== 'down' || frameIndex !== 1}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.left[0]}
+        hidden={facing !== 'left' || frameIndex !== 0}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.left[1]}
+        hidden={facing !== 'left' || frameIndex !== 1}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.right[0]}
+        hidden={facing !== 'right' || frameIndex !== 0}
+      />
+      <Image
+        width={64}
+        height={64}
+        src={characterSprites.right[1]}
+        hidden={facing !== 'right' || frameIndex !== 1}
+      />
+    </Frame>
   )
 }
 widget.register(Widget)
