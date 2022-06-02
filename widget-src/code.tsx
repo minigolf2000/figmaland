@@ -1,6 +1,5 @@
 const { widget } = figma
-const { useSyncedState } = widget
-const { Image } = widget
+const { Image, Frame, useSyncedState } = widget
 
 import guydown0 from './img/guy1/basic-down-0.png'
 import guyup0 from './img/guy1/basic-up-0.png'
@@ -20,12 +19,10 @@ function Widget() {
   }
 
   return (
-      <Image
-        onClick={activate}
-        width={64}
-        height={64}
-        src={facing === 'down' ? guydown0 : guyup0}
-      />
+    <Frame width={64} height={64} onClick={activate}>
+      <Image width={64} height={64} src={guydown0} hidden={facing !== 'down'} />
+      <Image width={64} height={64} src={guyup0} hidden={facing !== 'up'} />
+    </Frame>
   )
 }
 widget.register(Widget)
