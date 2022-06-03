@@ -5,7 +5,7 @@ import {
   normalize,
   vectorToFacing
 } from './vector'
-import { Facing, isOverlapping1D } from './lib'
+import { Facing, isOverlapping } from './lib'
 import { currentAnimations } from './animated_art_⏱'
 
 export enum MovementMode {
@@ -82,18 +82,18 @@ export function movement(props: {
   )
   setFacing(getFacingFromMovementDirection(attemptedMovementVector))
 
-  const movementVector = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionRects)
+  const newPosition = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionRects)
 
   // check collision here
 
-  if (movementVector.x !== 0 || movementVector.y !== 0) {
+  if (newPosition.x !== widgetNode.x || newPosition.y !== widgetNode.y) {
     // This is functionally the same as:
     // widgetNode.x = x
     // widgetNode.y = y
     // But sets them both in 1 Plugin API call instead of 2
     widgetNode.relativeTransform = [
-      [1, 0, widgetRect.x + movementVector.x],
-      [0, 1, widgetRect.y + movementVector.y]
+      [1, 0, newPosition.x],
+      [0, 1, newPosition.y]
     ]
 
      // update camera only if char is moving (for performance)
@@ -109,31 +109,24 @@ export function movement(props: {
   }
 }
 
-
-
 function getMovementVectorRespectingCollision(rect: Rect, vector: Vector, collisionRects: Rect[]) {
-  const newMoveX = getMovePositionRespectingCollision1D(rect.x, rect.x + rect.width, vector.x, collisionRects, (n: Rect) => isOverlapping1D(rect.x, rect.x + rect.width, n.x, n.x + n.width))
-  const newMoveY = getMovePositionRespectingCollision1D(rect.y, rect.y + rect.height, vector.y, collisionRects, (n: Rect) => isOverlapping1D(rect.y, rect.y + rect.height, n.y, n.y + n.height))
+  rect = {...rect, x: rect.x + vector.x}
 
-  return {x: newMoveX, y: newMoveY}
-}
-
-function getMovePositionRespectingCollision1D(left: number, right: number, move: number, collisionRects: Rect[], filterOverlappingNodesFunc: (n: Rect) => boolean) {
-  if (move > 0) {
-    const firstOverlappingNode = collisionRects.filter(filterOverlappingNodesFunc).sort(n => n.x)
-    if (firstOverlappingNode[0]) {
-      return firstOverlappingNode[0].x - 64 - left
-    }
+  const collidingXRectangle = collisionRects.find(r => isOverlapping(rect, r))
+  if (collidingXRectangle) {
+    const newXPos = vector.x > 0 ? collidingXRectangle.x - 64 : collidingXRectangle.x + collidingXRectangle.width
+    rect = {...rect, x: newXPos}
   }
-  if (move < 0) {
-    const firstOverlappingNode = collisionRects.filter(filterOverlappingNodesFunc).sort(n => n.x).reverse()
-    if (firstOverlappingNode[0]) {
-      return right - firstOverlappingNode[0].x - firstOverlappingNode[0].width
-    }
-  }
-  return move
-}
 
+  rect = {...rect, y: rect.y + vector.y}
+  const collidingYRectangle = collisionRects.find(r => isOverlapping(rect, r))
+  if (collidingYRectangle) {
+    const newYPos = vector.y > 0 ? collidingYRectangle.y - 64 : collidingYRectangle.y + collidingYRectangle.height
+    rect = {...rect, y: newYPos}
+  }
+
+  return rect
+}
 
 export function getMovementDirectionVector(from: Rect, to: Vector) {
   const fromMidpoint = midpoint(from)
