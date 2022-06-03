@@ -24,6 +24,7 @@ let lastSpriteIndex = 0
 // TODO: do we need to quadtree this stuff, or just iterate thru all nodes for now
 const animatedArtNodes: (FrameNode | GroupNode)[] = []
 const animatedArtRects: Rect[] = []
+const animatedArtIds: string[] = []
 const collisionRects: Rect[] = []
 const homeRects: Rect[] = []
 const bikeZoneRects: Rect[] = []
@@ -36,6 +37,7 @@ function gatherNodes() {
     if (nodeName[0] === '⏱') {
       animatedArtNodes.push(n as FrameNode | GroupNode)
       animatedArtRects.push(toRect(n))
+      animatedArtIds.push(n.id)
     }
     if (nodeName.slice(0, 2) === '🛑') {
       collisionRects.push(toRect(n))
@@ -86,7 +88,13 @@ function Widget() {
         lastSpriteIndex,
         collisionRects
       })
-      animatedArt(widgetId, widgetRect, animatedArtNodes, animatedArtRects)
+      animatedArt(
+        widgetId,
+        widgetRect,
+        animatedArtNodes,
+        animatedArtRects,
+        animatedArtIds
+      )
       bikeZone(widgetRect, bikeZoneRects)
       home(widgetRect, homeRects, setAtHome)
     }, 1000 / FPS)

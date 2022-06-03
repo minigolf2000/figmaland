@@ -1,4 +1,3 @@
-import { DEBUG } from './code'
 import { isOverlapping } from './lib'
 
 // Animated art loops an animation when a
@@ -9,13 +8,15 @@ export function animatedArt(
   widgetId: string,
   characterRect: Rect,
   animatedArtNodes: (FrameNode | GroupNode)[],
-  animatedArtRects: Rect[]
+  animatedArtRects: Rect[],
+  animatedArtIds: string[]
 ) {
   addOrRemoveAnimations(
     widgetId,
     characterRect,
     animatedArtNodes,
-    animatedArtRects
+    animatedArtRects,
+    animatedArtIds
   )
   incrementAnimations()
 }
@@ -24,7 +25,8 @@ function addOrRemoveAnimations(
   widgetId: string,
   characterRect: Rect,
   animatedArtNodes: (FrameNode | GroupNode)[],
-  animatedArtRects: Rect[]
+  animatedArtRects: Rect[],
+  animatedArtIds: string[]
 ) {
   for (let i = 0; i < animatedArtRects.length; i++) {
     const aRect = animatedArtRects[i]
@@ -37,6 +39,7 @@ function addOrRemoveAnimations(
       if (numAnimationFrames < 1) {
         break
       }
+      // TODO: implement multiplayer safety
       a.setPluginData(
         'animation',
         JSON.stringify({
@@ -59,10 +62,14 @@ function addOrRemoveAnimations(
         numAnimationFrames,
         animationNode: a
       }
-    } else if (currentAnimations[i] && a.getPluginData('animation')) {
-      a.children[currentAnimations[i].nextChildIndex].visible = false
+    } else if (
+      currentAnimations[animatedArtIds[i]] &&
+      a.getPluginData('animation')
+    ) {
+      a.children[currentAnimations[animatedArtIds[i]].nextChildIndex].visible =
+        false
       a.children[a.children.length - 1].visible = true
-      delete currentAnimations[i]
+      delete currentAnimations[animatedArtIds[i]]
       a.setPluginData('animation', '')
     }
   }
@@ -77,13 +84,13 @@ interface AnimationState {
 let currentAnimations: { [nodeId: string]: AnimationState } = {}
 
 function incrementAnimations() {
-  for (const i of Object.keys(currentAnimations)) {
+  for (const nodeId of Object.keys(currentAnimations)) {
     const {
       framesSinceLast,
       nextChildIndex,
       numAnimationFrames,
       animationNode
-    } = currentAnimations[i]
+    } = currentAnimations[nodeId]
 
     if (framesSinceLast === 0) {
       animationNode.children[nextChildIndex].visible = false
@@ -92,9 +99,7 @@ function incrementAnimations() {
       ].visible = true
     }
 
-    if (DEBUG) console.log(currentAnimations[i])
-
-    currentAnimations[i] = {
+    currentAnimations[nodeId] = {
       framesSinceLast: (framesSinceLast + 1) % ANIMATE_ONCE_EVERY_N_FRAMES,
       nextChildIndex:
         framesSinceLast === 0
@@ -111,6 +116,11 @@ function incrementAnimations() {
 figma.on('close', () => {
   for (const nodeId of Object.keys(currentAnimations)) {
     currentAnimations[nodeId].animationNode.setPluginData('animation', '')
-    // TODO: do we need to mark the 1st node as visible to reset idle state?
+    currentAnimations[nodeId].animationNode.children[
+      currentAnimations[nodeId].nextChildIndex
+    ].visible = false
+    currentAnimations[nodeId].animationNode.children[
+      currentAnimations[nodeId].animationNode.children.length - 1
+    ].visible = true
   }
 })
