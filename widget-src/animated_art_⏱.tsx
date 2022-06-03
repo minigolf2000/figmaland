@@ -1,5 +1,5 @@
 import { DEBUG } from './code'
-import { isOverlapping, toRect } from './lib'
+import { isOverlapping } from './lib'
 
 // Animated art loops an animation when a
 // player is nearby
@@ -8,19 +8,22 @@ const ANIMATE_ONCE_EVERY_N_FRAMES = 5
 export function animatedArt(
   widgetId: string,
   characterRect: Rect,
-  animatedArtNodes: (FrameNode | GroupNode)[]
+  animatedArtNodes: (FrameNode | GroupNode)[],
+  animatedArtRects: Rect[]
 ) {
-  addOrRemoveAnimations(widgetId, characterRect, animatedArtNodes)
+  addOrRemoveAnimations(widgetId, characterRect, animatedArtNodes, animatedArtRects)
   incrementAnimations()
 }
 
 function addOrRemoveAnimations(
   widgetId: string,
   characterRect: Rect,
-  animatedArtNodes: (FrameNode | GroupNode)[]
+  animatedArtNodes: (FrameNode | GroupNode)[],
+  animatedArtRects: Rect[]
 ) {
-  for (const a of animatedArtNodes) {
-    const aRect = toRect(a)
+  for (let i = 0; i < animatedArtRects.length; i++) {
+    const aRect = animatedArtRects[i]
+    const a = animatedArtNodes[i]
     if (isOverlapping(characterRect, aRect)) {
       if (!!a.getPluginData('animation')) {
         break
@@ -51,10 +54,10 @@ function addOrRemoveAnimations(
         numAnimationFrames,
         animationNode: a
       }
-    } else if (currentAnimations[a.id] && a.getPluginData('animation')) {
-      a.children[currentAnimations[a.id].nextChildIndex].visible = false
+    } else if (currentAnimations[i] && a.getPluginData('animation')) {
+      a.children[currentAnimations[i].nextChildIndex].visible = false
       a.children[a.children.length - 1].visible = true
-      delete currentAnimations[a.id]
+      delete currentAnimations[i]
       a.setPluginData('animation', '')
     }
   }
@@ -69,13 +72,13 @@ interface AnimationState {
 export let currentAnimations: { [nodeId: string]: AnimationState } = {}
 
 function incrementAnimations() {
-  for (const nodeId of Object.keys(currentAnimations)) {
+  for (const i of Object.keys(currentAnimations)) {
     const {
       framesSinceLast,
       nextChildIndex,
       numAnimationFrames,
       animationNode
-    } = currentAnimations[nodeId]
+    } = currentAnimations[i]
 
     if (framesSinceLast === 0) {
       animationNode.children[nextChildIndex].visible = false
@@ -84,9 +87,9 @@ function incrementAnimations() {
       ].visible = true
     }
 
-    if (DEBUG) console.log(currentAnimations[nodeId])
+    if (DEBUG) console.log(currentAnimations[i])
 
-    currentAnimations[nodeId] = {
+    currentAnimations[i] = {
       framesSinceLast: (framesSinceLast + 1) % ANIMATE_ONCE_EVERY_N_FRAMES,
       nextChildIndex:
         framesSinceLast === 0

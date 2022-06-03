@@ -39,14 +39,15 @@ figma.on('close', () => {
   }
 })
 
+let currentViewportCenter: Vector = figma.viewport.center
 export function movement(props: {
   widgetNode: WidgetNode
   widgetRect: Rect
   setFacing: (facing: Facing) => void
   lastSpriteIndex: number,
-  collisionNodes: SceneNode[]
+  collisionRects: Rect[]
 }) {
-  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionNodes } = props
+  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionRects } = props
 
   // User has panned their camera, let them pan and exit the widget to stop character movement
   if (
@@ -81,7 +82,7 @@ export function movement(props: {
   )
   setFacing(getFacingFromMovementDirection(attemptedMovementVector))
 
-  const movementVector = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionNodes)
+  const movementVector = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionRects)
 
   // check collision here
 
@@ -94,7 +95,13 @@ export function movement(props: {
       [1, 0, widgetRect.x + movementVector.x],
       [0, 1, widgetRect.y + movementVector.y]
     ]
-    figma.viewport.center = midpoint(widgetRect) // update camera
+
+     // update camera only if char is moving (for performance)
+    if (midpoint(widgetRect) !== currentViewportCenter) {
+      figma.viewport.center = midpoint(widgetRect)
+      currentViewportCenter = midpoint(widgetRect)
+    }
+
     return (lastSpriteIndex + 1) % 120 // a number that is divisible by 2 and 3
   } else {
     // Returning 0 here forces the same neutral stance frame when not moving
@@ -104,22 +111,22 @@ export function movement(props: {
 
 
 
-function getMovementVectorRespectingCollision(rect: Rect, vector: Vector, collisionNodes: SceneNode[]) {
-  const newMoveX = getMovePositionRespectingCollision1D(rect.x, rect.x + rect.width, vector.x, collisionNodes, (n: SceneNode) => isOverlapping1D(rect.x, rect.x + rect.width, n.x, n.x + n.width))
-  const newMoveY = getMovePositionRespectingCollision1D(rect.y, rect.y + rect.height, vector.y, collisionNodes, (n: SceneNode) => isOverlapping1D(rect.y, rect.y + rect.height, n.y, n.y + n.height))
+function getMovementVectorRespectingCollision(rect: Rect, vector: Vector, collisionRects: Rect[]) {
+  const newMoveX = getMovePositionRespectingCollision1D(rect.x, rect.x + rect.width, vector.x, collisionRects, (n: Rect) => isOverlapping1D(rect.x, rect.x + rect.width, n.x, n.x + n.width))
+  const newMoveY = getMovePositionRespectingCollision1D(rect.y, rect.y + rect.height, vector.y, collisionRects, (n: Rect) => isOverlapping1D(rect.y, rect.y + rect.height, n.y, n.y + n.height))
 
   return {x: newMoveX, y: newMoveY}
 }
 
-function getMovePositionRespectingCollision1D(left: number, right: number, move: number, collisionNodes: SceneNode[], filterOverlappingNodesFunc: (n: SceneNode) => boolean) {
+function getMovePositionRespectingCollision1D(left: number, right: number, move: number, collisionRects: Rect[], filterOverlappingNodesFunc: (n: Rect) => boolean) {
   if (move > 0) {
-    const firstOverlappingNode = collisionNodes.filter(filterOverlappingNodesFunc).sort(n => n.x)
+    const firstOverlappingNode = collisionRects.filter(filterOverlappingNodesFunc).sort(n => n.x)
     if (firstOverlappingNode[0]) {
       return firstOverlappingNode[0].x - 64 - left
     }
   }
   if (move < 0) {
-    const firstOverlappingNode = collisionNodes.filter(filterOverlappingNodesFunc).sort(n => n.x).reverse()
+    const firstOverlappingNode = collisionRects.filter(filterOverlappingNodesFunc).sort(n => n.x).reverse()
     if (firstOverlappingNode[0]) {
       return right - firstOverlappingNode[0].x - firstOverlappingNode[0].width
     }

@@ -19,6 +19,33 @@ const FPS = 30
 // How does the char know to alternate steps at all if this is not useSyncedState?
 let lastSpriteIndex = 0
 
+
+const animatedArtNodes: (FrameNode | GroupNode)[] = []
+const animatedArtRects: Rect[] = []
+const collisionRects: Rect[] = []
+const wardrobeRects: Rect[] = []
+const bikeZoneRects: Rect[] = []
+
+function gatherNodes() {
+  const nodes = figma.currentPage.findAll(() => true)
+
+  for (const n of nodes) {
+    const nodeName = n.name
+    if (nodeName[0] === '⏱') {
+      animatedArtNodes.push(n as (FrameNode | GroupNode))
+      animatedArtRects.push(toRect(n))
+    }
+    if (nodeName.slice(0, 2) === '🛑') {
+      collisionRects.push(toRect(n))
+    }
+if (nodeName.slice(0, 2) === '🏠') {
+wardrobeRects.push(toRect(n))
+}
+if (nodeName.slice(0, 2) === '🚲') {
+bikeZoneRects.push(n)
+}
+  }
+}
 function nextFrame(props: {
   widgetNode: WidgetNode
   setFacing: (facing: Facing) => void
@@ -27,24 +54,17 @@ function nextFrame(props: {
 }) {
   const { widgetNode, setFacing, inWardrobe, setInWardrobe } = props
   const widgetRect = toRect(widgetNode)
-  const nodes = figma.currentPage.findAll(() => true)
-  const animatedArtNodes = nodes.filter(
-    (n) => n.name[0] === '⏱' && ['FRAME', 'GROUP'].includes(n.type)
-  ) as (FrameNode | GroupNode)[]
-  const collisionNodes = nodes.filter((n) => n.name.slice(0, 2) === '🛑')
-  const wardrobeNodes = nodes.filter((n) => n.name.slice(0, 2) === '🏠')
-  const bikeZoneNodes = nodes.filter((n) => n.name.slice(0, 2) === '🚲')
 
   lastSpriteIndex = movement({
     widgetNode,
     widgetRect,
     setFacing,
     lastSpriteIndex,
-    collisionNodes
+    collisionRects
   })
-  animatedArt(widgetNode.id, toRect(widgetNode), animatedArtNodes)
-  bikeZone(widgetRect, bikeZoneNodes)
-  wardrobe(widgetRect, wardrobeNodes, inWardrobe, setInWardrobe)
+  animatedArt(widgetNode.id, widgetRect, animatedArtNodes, animatedArtRects)
+  bikeZone(widgetRect, bikeZoneRects)
+  wardrobe(widgetRect, wardrobeRects, inWardrobe, setInWardrobe)
 }
 
 function Widget() {
@@ -75,6 +95,7 @@ function Widget() {
     }
 
     figma.viewport.center = midpoint(widgetNode) // update camera
+    gatherNodes()
     setInterval(() => {
       nextFrame({ widgetNode, setFacing, inWardrobe, setInWardrobe })
     }, 1000 / FPS)

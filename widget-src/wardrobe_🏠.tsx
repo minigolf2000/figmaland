@@ -3,7 +3,7 @@ import { isOverlapping } from "./lib"
 
 export function wardrobe(
   characterRect: Rect,
-  wardrobeRects: SceneNode[],
+  wardrobeRects: Rect[],
   inWardrobe: boolean,
   setInWardrobe: (inWardrobe: boolean) => void
 ) {

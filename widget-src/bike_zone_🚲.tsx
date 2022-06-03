@@ -3,7 +3,7 @@ import { setMovementMode, MovementMode } from './movement_🛑'
 
 export function bikeZone(
   characterRect: Rect,
-  bikeZoneRects: SceneNode[]
+  bikeZoneRects: Rect[]
 ) {
   for (const a of bikeZoneRects) {
     if (isOverlapping(characterRect, a)) {
