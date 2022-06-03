@@ -15,5 +15,10 @@ export function isOverlapping(a: Rect, b: Rect) {
 export function toRect(n: SceneNode): Rect {
   // Use relativeTransform to make 1 plugin API call instead of 2
   const relativeTransform = n.relativeTransform
-  return { x: relativeTransform[0][2], y: relativeTransform[1][2], width: n.width, height: n.height }
+  return {
+    x: relativeTransform[0][2],
+    y: relativeTransform[1][2],
+    width: n.width,
+    height: n.height
+  }
 }

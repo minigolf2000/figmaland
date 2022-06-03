@@ -34,38 +34,19 @@ function gatherNodes() {
   for (const n of nodes) {
     const nodeName = n.name
     if (nodeName[0] === '⏱') {
-      animatedArtNodes.push(n as (FrameNode | GroupNode))
+      animatedArtNodes.push(n as FrameNode | GroupNode)
       animatedArtRects.push(toRect(n))
     }
     if (nodeName.slice(0, 2) === '🛑') {
       collisionRects.push(toRect(n))
     }
-if (nodeName.slice(0, 2) === '🏠') {
-homeRects.push(toRect(n))
-}
-if (nodeName.slice(0, 2) === '🚲') {
-bikeZoneRects.push(n)
-}
+    if (nodeName.slice(0, 2) === '🏠') {
+      homeRects.push(toRect(n))
+    }
+    if (nodeName.slice(0, 2) === '🚲') {
+      bikeZoneRects.push(n)
+    }
   }
-}
-function nextFrame(props: {
-  widgetNode: WidgetNode
-  setFacing: (facing: Facing) => void
-  setAtHome: (atHome: boolean) => void
-}) {
-  const { widgetNode, setFacing, setAtHome } = props
-  const widgetRect = toRect(widgetNode)
-
-  lastSpriteIndex = movement({
-    widgetNode,
-    widgetRect,
-    setFacing,
-    lastSpriteIndex,
-    collisionRects
-  })
-  animatedArt(widgetNode.id, widgetRect, animatedArtNodes, animatedArtRects)
-  bikeZone(widgetRect, bikeZoneRects)
-  home(widgetRect, homeRects, setAtHome)
 }
 
 function Widget() {
@@ -74,16 +55,15 @@ function Widget() {
     'characterIndex',
     0
   )
-  const [atHome, setAtHome] = useSyncedState<boolean>(
-    'atHome',
-    false
-  )
+  const [atHome, setAtHome] = useSyncedState<boolean>('atHome', false)
 
   const propertyMenu: WidgetPropertyMenuItem[] = atHome
     ? [homePropertyMenuItem(characterIndex)]
     : []
   usePropertyMenu(propertyMenu, ({ propertyValue }) => {
-    setCharacterIndex(selectableCharacters.findIndex((c) => c.name === propertyValue))
+    setCharacterIndex(
+      selectableCharacters.findIndex((c) => c.name === propertyValue)
+    )
   })
 
   const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')
@@ -96,8 +76,19 @@ function Widget() {
 
     figma.viewport.center = midpoint(widgetNode) // update camera
     gatherNodes()
+
     setInterval(() => {
-      nextFrame({ widgetNode, setFacing, setAtHome })
+      const widgetRect = toRect(widgetNode)
+      lastSpriteIndex = movement({
+        widgetNode,
+        widgetRect,
+        setFacing,
+        lastSpriteIndex,
+        collisionRects
+      })
+      animatedArt(widgetId, widgetRect, animatedArtNodes, animatedArtRects)
+      bikeZone(widgetRect, bikeZoneRects)
+      home(widgetRect, homeRects, setAtHome)
     }, 1000 / FPS)
     return new Promise<void>(() => {})
   }
@@ -114,18 +105,17 @@ function Widget() {
   // memory leak / race condition in Fullscreen image loading code
   return (
     <Frame width={64} height={64} onClick={activate}>
-      {
-        (['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
-      characterSprites[f].map((src: string, i: number) =>
-      <Image
-      key={`${f}-${i}`}
-      width={64}
-      height={64}
-      src={src}
-      hidden={facing !== f || frameIndex !== i}
-      />
-      ))
-      }
+      {(['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
+        characterSprites[f].map((src: string, i: number) => (
+          <Image
+            key={`${f}-${i}`}
+            width={64}
+            height={64}
+            src={src}
+            hidden={facing !== f || frameIndex !== i}
+          />
+        ))
+      )}
     </Frame>
   )
 }

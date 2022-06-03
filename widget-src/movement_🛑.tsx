@@ -20,7 +20,9 @@ export function setMovementMode(mode: MovementMode) {
 // min distance the mouse needs to be from center of avatar to move
 // At zoom level 100%, mouse must be 60 pixels away
 // At zoom level 200%, mouse must be 120 pixels away (which feels the same as at 100%)
-function movementMinDistance() { return 60 / figma.viewport.zoom }
+function movementMinDistance() {
+  return 60 / figma.viewport.zoom
+}
 
 // some arbitrary ratio to map distance from mouse from avatar to movement speed
 function movementRatio() {
@@ -37,10 +39,11 @@ export function movement(props: {
   widgetNode: WidgetNode
   widgetRect: Rect
   setFacing: (facing: Facing) => void
-  lastSpriteIndex: number,
+  lastSpriteIndex: number
   collisionRects: Rect[]
 }) {
-  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionRects } = props
+  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionRects } =
+    props
 
   // User has panned their camera, let them pan and exit the widget to stop character movement
   if (
@@ -75,7 +78,11 @@ export function movement(props: {
   )
   setFacing(getFacingFromMovementDirection(attemptedMovementVector))
 
-  const newPosition = getMovementVectorRespectingCollision(widgetRect, attemptedMovementVector, collisionRects)
+  const newPosition = getMovementVectorRespectingCollision(
+    widgetRect,
+    attemptedMovementVector,
+    collisionRects
+  )
 
   // check collision here
 
@@ -89,7 +96,7 @@ export function movement(props: {
       [0, 1, newPosition.y]
     ]
 
-     // update camera only if char is moving (for performance)
+    // update camera only if char is moving (for performance)
     if (midpoint(widgetRect) !== currentViewportCenter) {
       figma.viewport.center = midpoint(widgetRect)
       currentViewportCenter = midpoint(widgetRect)
@@ -102,20 +109,30 @@ export function movement(props: {
   }
 }
 
-function getMovementVectorRespectingCollision(rect: Rect, vector: Vector, collisionRects: Rect[]) {
-  rect = {...rect, x: rect.x + vector.x}
+function getMovementVectorRespectingCollision(
+  rect: Rect,
+  vector: Vector,
+  collisionRects: Rect[]
+) {
+  rect = { ...rect, x: rect.x + vector.x }
 
-  const collidingXRectangle = collisionRects.find(r => isOverlapping(rect, r))
+  const collidingXRectangle = collisionRects.find((r) => isOverlapping(rect, r))
   if (collidingXRectangle) {
-    const newXPos = vector.x > 0 ? collidingXRectangle.x - 64 : collidingXRectangle.x + collidingXRectangle.width
-    rect = {...rect, x: newXPos}
+    const newXPos =
+      vector.x > 0
+        ? collidingXRectangle.x - 64
+        : collidingXRectangle.x + collidingXRectangle.width
+    rect = { ...rect, x: newXPos }
   }
 
-  rect = {...rect, y: rect.y + vector.y}
-  const collidingYRectangle = collisionRects.find(r => isOverlapping(rect, r))
+  rect = { ...rect, y: rect.y + vector.y }
+  const collidingYRectangle = collisionRects.find((r) => isOverlapping(rect, r))
   if (collidingYRectangle) {
-    const newYPos = vector.y > 0 ? collidingYRectangle.y - 64 : collidingYRectangle.y + collidingYRectangle.height
-    rect = {...rect, y: newYPos}
+    const newYPos =
+      vector.y > 0
+        ? collidingYRectangle.y - 64
+        : collidingYRectangle.y + collidingYRectangle.height
+    rect = { ...rect, y: newYPos }
   }
 
   return rect
@@ -126,10 +143,13 @@ export function getMovementDirectionVector(from: Rect, to: Vector) {
   const mouseDistance = distance(fromMidpoint, to)
 
   if (mouseDistance < movementMinDistance()) {
-    return {x: 0, y: 0}
+    return { x: 0, y: 0 }
   }
 
-  const movementSpeed = Math.min(mouseDistance / movementRatio(), movementMaxSpeed())
+  const movementSpeed = Math.min(
+    mouseDistance / movementRatio(),
+    movementMaxSpeed()
+  )
   return multiply(
     normalize({ x: to.x - fromMidpoint.x, y: to.y - fromMidpoint.y }),
     movementSpeed

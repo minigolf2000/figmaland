@@ -1,5 +1,5 @@
-import { selectableCharacters } from "./img/sprites"
-import { isOverlapping } from "./lib"
+import { selectableCharacters } from './img/sprites'
+import { isOverlapping } from './lib'
 
 let atHome = false
 export function home(
@@ -7,7 +7,7 @@ export function home(
   homeRects: Rect[],
   setAtHome: (atHome: boolean) => void
 ) {
-  const h = homeRects.some(r => isOverlapping(characterRect, r))
+  const h = homeRects.some((r) => isOverlapping(characterRect, r))
   if (h && !atHome) {
     atHome = true
     setAtHome(true)
@@ -26,6 +26,9 @@ export function homePropertyMenuItem(
     propertyName: 'cardColor',
     tooltip: 'Change character',
     selectedOption: selectableCharacters[characterIndex].name,
-    options: selectableCharacters.map(c => ({option: c.name, label: c.name}))
+    options: selectableCharacters.map((c) => ({
+      option: c.name,
+      label: c.name
+    }))
   }
 }

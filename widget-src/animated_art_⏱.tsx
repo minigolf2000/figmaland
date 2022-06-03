@@ -11,7 +11,12 @@ export function animatedArt(
   animatedArtNodes: (FrameNode | GroupNode)[],
   animatedArtRects: Rect[]
 ) {
-  addOrRemoveAnimations(widgetId, characterRect, animatedArtNodes, animatedArtRects)
+  addOrRemoveAnimations(
+    widgetId,
+    characterRect,
+    animatedArtNodes,
+    animatedArtRects
+  )
   incrementAnimations()
 }
 

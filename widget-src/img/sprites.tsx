@@ -69,8 +69,9 @@ const bike: Character = {
 export const selectableCharacters = [blueLink, guy]
 
 export function getCharacterSprites(characterIndex: number) {
-  return movementMode === MovementMode.Bicycle ? bike.sprites : selectableCharacters[characterIndex].sprites
-
+  return movementMode === MovementMode.Bicycle
+    ? bike.sprites
+    : selectableCharacters[characterIndex].sprites
 }
 
 export function getFrameIndex(
