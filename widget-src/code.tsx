@@ -2,7 +2,7 @@ const { widget } = figma
 const { Image, Frame, useSyncedState, usePropertyMenu } = widget
 import { bikeZone } from './bike_zone_🚲'
 import {
-  allCharacters,
+  selectableCharacters,
   getCharacterSprites,
   getFrameIndex
 } from './img/sprites'
@@ -10,20 +10,22 @@ import { Facing, toRect } from './lib'
 import { movement } from './movement_🛑'
 import { animatedArt } from './animated_art_⏱'
 import { midpoint } from './vector'
-import { wardrobe, wardrobePropertyMenuItem } from './wardrobe_🏠'
+import { home, homePropertyMenuItem } from './home_🏠'
 
 export const DEBUG = false // Add options to debug the widget
 
 const FPS = 30
 
 // How does the char know to alternate steps at all if this is not useSyncedState?
+// If I try putting frameIndex in syncedState I see this error:
+// in setSyncedState: Cannot call setSyncedState while widget is rendering.
 let lastSpriteIndex = 0
 
-
+// TODO: do we need to quadtree this stuff, or just iterate thru all nodes for now
 const animatedArtNodes: (FrameNode | GroupNode)[] = []
 const animatedArtRects: Rect[] = []
 const collisionRects: Rect[] = []
-const wardrobeRects: Rect[] = []
+const homeRects: Rect[] = []
 const bikeZoneRects: Rect[] = []
 
 function gatherNodes() {
@@ -39,7 +41,7 @@ function gatherNodes() {
       collisionRects.push(toRect(n))
     }
 if (nodeName.slice(0, 2) === '🏠') {
-wardrobeRects.push(toRect(n))
+homeRects.push(toRect(n))
 }
 if (nodeName.slice(0, 2) === '🚲') {
 bikeZoneRects.push(n)
@@ -49,10 +51,9 @@ bikeZoneRects.push(n)
 function nextFrame(props: {
   widgetNode: WidgetNode
   setFacing: (facing: Facing) => void
-  inWardrobe: boolean
-  setInWardrobe: (inWardrobe: boolean) => void
+  setAtHome: (atHome: boolean) => void
 }) {
-  const { widgetNode, setFacing, inWardrobe, setInWardrobe } = props
+  const { widgetNode, setFacing, setAtHome } = props
   const widgetRect = toRect(widgetNode)
 
   lastSpriteIndex = movement({
@@ -64,26 +65,25 @@ function nextFrame(props: {
   })
   animatedArt(widgetNode.id, widgetRect, animatedArtNodes, animatedArtRects)
   bikeZone(widgetRect, bikeZoneRects)
-  wardrobe(widgetRect, wardrobeRects, inWardrobe, setInWardrobe)
+  home(widgetRect, homeRects, setAtHome)
 }
 
 function Widget() {
-  // todo: if wardrobeIndex == -1, create a node that spawns widgets?
   const widgetId = widget.useWidgetId()
-  const [wardrobeIndex, setWardrobeIndex] = useSyncedState<number>(
-    'wardrobeIndex',
+  const [characterIndex, setCharacterIndex] = useSyncedState<number>(
+    'characterIndex',
     0
   )
-  const [inWardrobe, setInWardrobe] = useSyncedState<boolean>(
-    'inWardrobe',
+  const [atHome, setAtHome] = useSyncedState<boolean>(
+    'atHome',
     false
   )
 
-  const propertyMenu: WidgetPropertyMenuItem[] = inWardrobe
-    ? [wardrobePropertyMenuItem(wardrobeIndex)]
+  const propertyMenu: WidgetPropertyMenuItem[] = atHome
+    ? [homePropertyMenuItem(characterIndex)]
     : []
   usePropertyMenu(propertyMenu, ({ propertyValue }) => {
-    setWardrobeIndex(allCharacters.findIndex((c) => c.name === propertyValue))
+    setCharacterIndex(selectableCharacters.findIndex((c) => c.name === propertyValue))
   })
 
   const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')
@@ -97,68 +97,35 @@ function Widget() {
     figma.viewport.center = midpoint(widgetNode) // update camera
     gatherNodes()
     setInterval(() => {
-      nextFrame({ widgetNode, setFacing, inWardrobe, setInWardrobe })
+      nextFrame({ widgetNode, setFacing, setAtHome })
     }, 1000 / FPS)
     return new Promise<void>(() => {})
   }
 
-  const characterSprites = getCharacterSprites(wardrobeIndex)
+  const characterSprites = getCharacterSprites(characterIndex)
 
   const frameIndex = getFrameIndex(
     lastSpriteIndex,
     characterSprites[facing].length
   )
 
+  // Render all the <Image /> tags for a character
+  // Use visibility to toggle which is visible, to avoid a
+  // memory leak / race condition in Fullscreen image loading code
   return (
     <Frame width={64} height={64} onClick={activate}>
+      {
+        (['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
+      characterSprites[f].map((src: string, i: number) =>
       <Image
-        width={64}
-        height={64}
-        src={characterSprites.up[0]}
-        hidden={facing !== 'up' || frameIndex !== 0}
+      key={`${f}-${i}`}
+      width={64}
+      height={64}
+      src={src}
+      hidden={facing !== f || frameIndex !== i}
       />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.up[1]}
-        hidden={facing !== 'up' || frameIndex !== 1}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.down[0]}
-        hidden={facing !== 'down' || frameIndex !== 0}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.down[1]}
-        hidden={facing !== 'down' || frameIndex !== 1}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.left[0]}
-        hidden={facing !== 'left' || frameIndex !== 0}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.left[1]}
-        hidden={facing !== 'left' || frameIndex !== 1}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.right[0]}
-        hidden={facing !== 'right' || frameIndex !== 0}
-      />
-      <Image
-        width={64}
-        height={64}
-        src={characterSprites.right[1]}
-        hidden={facing !== 'right' || frameIndex !== 1}
-      />
+      ))
+      }
     </Frame>
   )
 }

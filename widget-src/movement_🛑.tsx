@@ -6,7 +6,6 @@ import {
   vectorToFacing
 } from './vector'
 import { Facing, isOverlapping } from './lib'
-import { currentAnimations } from './animated_art_⏱'
 
 export enum MovementMode {
   Foot,
@@ -32,12 +31,6 @@ function movementRatio() {
 function movementMaxSpeed() {
   return movementMode === MovementMode.Foot ? 12 : 36
 }
-
-figma.on('close', () => {
-  for (const nodeId of Object.keys(currentAnimations)) {
-    currentAnimations[nodeId].animationNode.setPluginData('animation', '')
-  }
-})
 
 let currentViewportCenter: Vector = figma.viewport.center
 export function movement(props: {

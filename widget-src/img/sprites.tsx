@@ -36,7 +36,7 @@ interface Character {
   sprites: CharacterSprites
 }
 
-export const blueLink: Character = {
+const blueLink: Character = {
   name: 'Link',
   sprites: {
     up: [blueup0, blueup1],
@@ -46,7 +46,7 @@ export const blueLink: Character = {
   }
 }
 
-export const guy: Character = {
+const guy: Character = {
   name: 'Guy by Laura Pang',
   sprites: {
     up: [guyup0, guyup1],
@@ -66,12 +66,11 @@ const bike: Character = {
   }
 }
 
-export const allCharacters = [blueLink, guy]
+export const selectableCharacters = [blueLink, guy]
 
-export function getCharacterSprites(wardrobeIndex: number) {
-  const character =
-    movementMode === MovementMode.Bicycle ? bike : allCharacters[wardrobeIndex]
-  return character.sprites
+export function getCharacterSprites(characterIndex: number) {
+  return movementMode === MovementMode.Bicycle ? bike.sprites : selectableCharacters[characterIndex].sprites
+
 }
 
 export function getFrameIndex(

@@ -69,7 +69,7 @@ interface AnimationState {
   numAnimationFrames: number
   animationNode: FrameNode | GroupNode
 }
-export let currentAnimations: { [nodeId: string]: AnimationState } = {}
+let currentAnimations: { [nodeId: string]: AnimationState } = {}
 
 function incrementAnimations() {
   for (const i of Object.keys(currentAnimations)) {
@@ -102,3 +102,10 @@ function incrementAnimations() {
 }
 
 // TODO(golf): this will probably crash if animated art nodes are edited while widget is running. This is fine
+
+figma.on('close', () => {
+  for (const nodeId of Object.keys(currentAnimations)) {
+    currentAnimations[nodeId].animationNode.setPluginData('animation', '')
+    // TODO: do we need to mark the 1st node as visible to reset idle state?
+  }
+})
