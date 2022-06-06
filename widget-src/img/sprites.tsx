@@ -12,14 +12,14 @@ import bikeleft2 from './bike/left-2.png'
 import bikeright1 from './bike/right-1.png'
 import bikeright2 from './bike/right-2.png'
 
-import bluedown0 from './blue/basic-down-0.png'
-import blueleft0 from './blue/basic-left-0.png'
-import blueright0 from './blue/basic-right-0.png'
-import blueup0 from './blue/basic-up-0.png'
-import bluedown1 from './blue/basic-down-1.png'
-import blueleft1 from './blue/basic-left-1.png'
-import blueright1 from './blue/basic-right-1.png'
-import blueup1 from './blue/basic-up-1.png'
+import girlback1 from './girl1/Girlback1.png'
+import girlback2 from './girl1/Girlback2.png'
+import girlfront1 from './girl1/Girlfront1.png'
+import girlfront2 from './girl1/Girlfront2.png'
+import girlleft1 from './girl1/Girlleft1.png'
+import girlleft2 from './girl1/Girlleft2.png'
+import girlright1 from './girl1/Girlright1.png'
+import girlright2 from './girl1/Girlright2.png'
 
 import guydown0 from './guy1/basic-down-0.png'
 import guyleft0 from './guy1/basic-left-0.png'
@@ -36,18 +36,18 @@ interface Character {
   sprites: CharacterSprites
 }
 
-const blueLink: Character = {
-  name: 'Link',
+const girl: Character = {
+  name: 'Some girl by Laura Pang',
   sprites: {
-    up: [blueup0, blueup1],
-    down: [bluedown0, bluedown1],
-    left: [blueleft0, blueleft1],
-    right: [blueright0, blueright1]
+    up: [girlback1, girlback2],
+    down: [girlfront1, girlfront2],
+    left: [girlleft1, girlleft2],
+    right: [girlright1, girlright2]
   }
 }
 
 const guy: Character = {
-  name: 'Guy by Laura Pang',
+  name: 'Some Guy by Laura Pang',
   sprites: {
     up: [guyup0, guyup1],
     down: [guydown0, guydown1],
@@ -66,7 +66,7 @@ const bike: Character = {
   }
 }
 
-export const selectableCharacters = [blueLink, guy]
+export const selectableCharacters = [guy, girl]
 
 export function getCharacterSprites(characterIndex: number) {
   return movementMode === MovementMode.Bicycle
