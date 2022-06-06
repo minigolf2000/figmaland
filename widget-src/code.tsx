@@ -63,12 +63,20 @@ function Widget() {
     ? [homePropertyMenuItem(characterIndex)]
     : []
   usePropertyMenu(propertyMenu, ({ propertyValue }) => {
-    setCharacterIndex(
-      selectableCharacters.findIndex((c) => c.name === propertyValue)
+    const newCharacterIndex = selectableCharacters.findIndex(
+      (c) => c.name === propertyValue
+    )
+    setCharacterIndex(newCharacterIndex)
+    setFacing(
+      getCharacterSprites(newCharacterIndex).down.length > 0 ? 'down' : 'right'
     )
   })
 
-  const [facing, setFacing] = useSyncedState<Facing>('facing', 'down')
+  const characterSprites = getCharacterSprites(characterIndex)
+  const [facing, setFacing] = useSyncedState<Facing>(
+    'facing',
+    characterSprites.down.length > 0 ? 'down' : 'right'
+  )
 
   const activate = () => {
     const widgetNode = figma.getNodeById(widgetId) as WidgetNode
@@ -86,7 +94,8 @@ function Widget() {
         widgetRect,
         setFacing,
         lastSpriteIndex,
-        collisionRects
+        collisionRects,
+        characterHasUpDownSprites: characterSprites.down.length > 0
       })
       animatedArt(
         widgetId,
@@ -100,8 +109,6 @@ function Widget() {
     }, 1000 / FPS)
     return new Promise<void>(() => {})
   }
-
-  const characterSprites = getCharacterSprites(characterIndex)
 
   const frameIndex = getFrameIndex(
     lastSpriteIndex,

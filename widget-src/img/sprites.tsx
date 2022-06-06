@@ -30,6 +30,11 @@ import guyleft1 from './guy1/basic-left-1.png'
 import guyright1 from './guy1/basic-right-1.png'
 import guyup1 from './guy1/basic-up-1.png'
 
+import sheriffleft0 from './sheriff/left0.png'
+import sheriffright0 from './sheriff/right0.png'
+import sheriffleft1 from './sheriff/left1.png'
+import sheriffright1 from './sheriff/right1.png'
+
 type CharacterSprites = { [T in Facing]: string[] }
 interface Character {
   name: string
@@ -56,6 +61,16 @@ const guy: Character = {
   }
 }
 
+const sheriff: Character = {
+  name: 'Sheriff by Kenrick Rilee',
+  sprites: {
+    left: [sheriffleft0, sheriffleft1],
+    right: [sheriffright0, sheriffright1],
+    up: [],
+    down: []
+  }
+}
+
 const bike: Character = {
   name: '',
   sprites: {
@@ -66,7 +81,7 @@ const bike: Character = {
   }
 }
 
-export const selectableCharacters = [guy, girl]
+export const selectableCharacters = [guy, girl, sheriff]
 
 export function getCharacterSprites(characterIndex: number) {
   return movementMode === MovementMode.Bicycle

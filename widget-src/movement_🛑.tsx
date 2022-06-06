@@ -41,9 +41,16 @@ export function movement(props: {
   setFacing: (facing: Facing) => void
   lastSpriteIndex: number
   collisionRects: Rect[]
+  characterHasUpDownSprites: boolean
 }) {
-  const { widgetNode, widgetRect, setFacing, lastSpriteIndex, collisionRects } =
-    props
+  const {
+    widgetNode,
+    widgetRect,
+    setFacing,
+    lastSpriteIndex,
+    collisionRects,
+    characterHasUpDownSprites
+  } = props
 
   // User has panned their camera, let them pan and exit the widget to stop character movement
   if (
@@ -52,7 +59,7 @@ export function movement(props: {
     movementMaxSpeed() * 10
   ) {
     figma.currentPage.selection = []
-    setFacing('down')
+    setFacing(characterHasUpDownSprites ? 'down' : 'right')
     figma.closePlugin(
       'Stopping character movement to allow free camera. Click character to resume'
     )
@@ -61,7 +68,7 @@ export function movement(props: {
 
   // Character gets deselected. Exit
   if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
-    setFacing('down')
+    setFacing(characterHasUpDownSprites ? 'down' : 'right')
     figma.closePlugin(
       'Character is no longer selected and has stopped moving. Click character to resume'
     )
@@ -76,7 +83,12 @@ export function movement(props: {
     widgetRect,
     figma.activeUsers[0].position
   )
-  setFacing(getFacingFromMovementDirection(attemptedMovementVector))
+  setFacing(
+    getFacingFromMovementDirection(
+      attemptedMovementVector,
+      characterHasUpDownSprites
+    )
+  )
 
   const newPosition = getMovementVectorRespectingCollision(
     widgetRect,
@@ -156,10 +168,17 @@ export function getMovementDirectionVector(from: Rect, to: Vector) {
   )
 }
 
-export function getFacingFromMovementDirection(direction: Vector): Facing {
-  if (direction.x === 0 && direction.y === 0) {
-    return 'down'
-  }
+export function getFacingFromMovementDirection(
+  direction: Vector,
+  characterHasUpDownSprites: boolean
+): Facing {
+  if (characterHasUpDownSprites) {
+    if (direction.x === 0 && direction.y === 0) {
+      return 'down'
+    }
 
-  return vectorToFacing(direction)
+    return vectorToFacing(direction)
+  } else {
+    return direction.x < 0 ? 'left' : 'right'
+  }
 }
