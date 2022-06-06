@@ -30,6 +30,15 @@ import guyleft1 from './guy1/basic-left-1.png'
 import guyright1 from './guy1/basic-right-1.png'
 import guyup1 from './guy1/basic-up-1.png'
 
+import totorodown0 from './totoro/down-0.png'
+import totoroleft0 from './totoro/left-0.png'
+import totororight0 from './totoro/right-0.png'
+import totoroup0 from './totoro/up-0.png'
+import totorodown1 from './totoro/down-1.png'
+import totoroleft1 from './totoro/left-1.png'
+import totororight1 from './totoro/right-1.png'
+import totoroup1 from './totoro/up-1.png'
+
 import sheriffleft0 from './sheriff/left0.png'
 import sheriffright0 from './sheriff/right0.png'
 import sheriffleft1 from './sheriff/left1.png'
@@ -71,6 +80,16 @@ const sheriff: Character = {
   }
 }
 
+const totoro: Character = {
+  name: 'Totoro by Jessie Mao',
+  sprites: {
+    up: [totoroup0, totoroup1],
+    down: [totorodown0, totorodown1],
+    left: [totoroleft0, totoroleft1],
+    right: [totororight0, totororight1]
+  }
+}
+
 const bike: Character = {
   name: '',
   sprites: {
@@ -81,7 +100,7 @@ const bike: Character = {
   }
 }
 
-export const selectableCharacters = [guy, girl, sheriff]
+export const selectableCharacters = [guy, girl, sheriff, totoro]
 
 export function getCharacterSprites(characterIndex: number) {
   return movementMode === MovementMode.Bicycle
