@@ -33,11 +33,11 @@ function addOrRemoveAnimations(
     const a = animatedArtNodes[i]
     if (isOverlapping(characterRect, aRect)) {
       if (!!a.getPluginData('animation')) {
-        break
+        continue
       }
       const numAnimationFrames = a.children.length - 1
       if (numAnimationFrames < 1) {
-        break
+        continue
       }
       // TODO: implement multiplayer safety
       a.setPluginData(
