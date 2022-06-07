@@ -9,15 +9,17 @@ export function isOverlapping(a: Rect, b: Rect) {
   )
 }
 
+// TODO: use absoluteRenderBounds?
+
 // Convert a SceneNode to Rect. Repeatedly accessing SceneNode properties
 // is expensive, so if we need to access these multiple times it's more
 // performant to first clone a Rect that has these properties
 export function toRect(n: SceneNode): Rect {
-  // Use relativeTransform to make 1 plugin API call instead of 2
-  const relativeTransform = n.relativeTransform
+  // Use absoluteTransform to make 1 plugin API call instead of 2
+  const absoluteTransform = n.absoluteTransform
   return {
-    x: relativeTransform[0][2],
-    y: relativeTransform[1][2],
+    x: absoluteTransform[0][2],
+    y: absoluteTransform[1][2],
     width: n.width,
     height: n.height
   }

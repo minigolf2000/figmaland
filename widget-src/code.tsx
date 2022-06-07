@@ -89,7 +89,11 @@ function Widget() {
     }
     figma.viewport.center = midpoint(widgetNode) // update camera
     gatherNodes()
-
+    const index = figma.currentPage.children.findIndex(
+      (n) => n.name === '--- running widgets ---'
+    )
+    if (index !== -1) widgetNode.parent?.insertChild(index, widgetNode)
+    // TODO: move widget's z-index to be just under the first 🛑
     const myInterval = setInterval(() => {
       const widgetRect = toRect(widgetNode)
       lastSpriteIndex = movement({
@@ -113,6 +117,10 @@ function Widget() {
 
     figma.on('close', () => {
       clearInterval(myInterval)
+      widgetNode.parent?.insertChild(
+        widgetNode.parent.children.length,
+        widgetNode
+      )
     })
 
     return new Promise<void>(() => {})
