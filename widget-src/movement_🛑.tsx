@@ -132,8 +132,8 @@ function getMovementVectorRespectingCollision(
   if (collidingXRectangle) {
     const newXPos =
       vector.x > 0
-        ? collidingXRectangle.x - 64
-        : collidingXRectangle.x + collidingXRectangle.width
+        ? collidingXRectangle.x - rect.width
+        : collidingXRectangle.x + collidingXRectangle.width + 1
     rect = { ...rect, x: newXPos }
   }
 
@@ -142,8 +142,8 @@ function getMovementVectorRespectingCollision(
   if (collidingYRectangle) {
     const newYPos =
       vector.y > 0
-        ? collidingYRectangle.y - 64
-        : collidingYRectangle.y + collidingYRectangle.height
+        ? collidingYRectangle.y - rect.height
+        : collidingYRectangle.y + collidingYRectangle.height + 1
     rect = { ...rect, y: newYPos }
   }
 
