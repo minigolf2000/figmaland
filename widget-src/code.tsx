@@ -84,10 +84,13 @@ function Widget() {
       figma.currentPage.selection = [widgetNode]
     }
 
+    if (figma.viewport.zoom > 1) {
+      figma.viewport.zoom = 1
+    }
     figma.viewport.center = midpoint(widgetNode) // update camera
     gatherNodes()
 
-    setInterval(() => {
+    const myInterval = setInterval(() => {
       const widgetRect = toRect(widgetNode)
       lastSpriteIndex = movement({
         widgetNode,
@@ -107,6 +110,11 @@ function Widget() {
       bikeZone(widgetRect, bikeZoneRects)
       home(widgetRect, homeRects, setAtHome)
     }, 1000 / FPS)
+
+    figma.on('close', () => {
+      clearInterval(myInterval)
+    })
+
     return new Promise<void>(() => {})
   }
 
