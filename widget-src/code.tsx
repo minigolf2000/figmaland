@@ -88,6 +88,11 @@ function Widget() {
       const lockedClone = widgetNode.cloneWidget({})
       widgetNode.locked = false
       figma.currentPage.appendChild(lockedClone)
+    } else if (widgetNode.parent !== figma.currentPage) {
+      const rect = toRect(widgetNode)
+      figma.currentPage.appendChild(widgetNode)
+      widgetNode.x = rect.x
+      widgetNode.y = rect.y
     }
 
     if (figma.viewport.zoom > 1) {
@@ -99,7 +104,7 @@ function Widget() {
       (n) => n.name === '--- running widgets ---'
     )
     if (index !== -1) widgetNode.parent?.insertChild(index, widgetNode)
-    // TODO: move widget's z-index to be just under the first 🛑
+
     const myInterval = setInterval(() => {
       const widgetRect = toRect(widgetNode)
       lastSpriteIndex = movement({
