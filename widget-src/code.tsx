@@ -4,10 +4,12 @@ import { bikeZone } from './bike_zone_🚲'
 import {
   selectableCharacters,
   getCharacter,
-  getFrameIndex
+  getFrameIndex,
+  BikeFrontNodes,
+  BikeBackNodes
 } from './img/sprites'
 import { Facing, toRect } from './lib'
-import { movement } from './movement_🛑'
+import { movement, MovementMode, movementMode } from './movement_🛑'
 import { animatedArt } from './animated_art_⏱'
 import { midpoint } from './vector'
 import { home, homePropertyMenuItem } from './home_🏠'
@@ -58,6 +60,7 @@ function Widget() {
     0
   )
   const [atHome, setAtHome] = useSyncedState<boolean>('atHome', false)
+  // const [inCart, setInCart] = useSyncedState<boolean>('inCart', false)
 
   const propertyMenu: WidgetPropertyMenuItem[] = atHome
     ? [homePropertyMenuItem(characterIndex)]
@@ -146,18 +149,37 @@ function Widget() {
   // Use visibility to toggle which is visible, to avoid a
   // memory leak / race condition in Fullscreen image loading code
   return (
-    <Frame width={64} height={character.isTall ? 128 : 64} onClick={activate}>
+    <Frame
+      width={movementMode === MovementMode.Bicycle ? 128 : 64}
+      height={
+        movementMode === MovementMode.Bicycle || character.isTall ? 128 : 64
+      }
+      onClick={activate}
+    >
+      {BikeBackNodes(facing, frameIndex)}
       {(['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
         character.sprites[f].map((src: string, i: number) => (
           <Image
+            x={movementMode === MovementMode.Bicycle ? 32 : 0}
+            y={
+              movementMode === MovementMode.Bicycle
+                ? facing === 'up' || facing === 'down'
+                  ? 32
+                  : 16
+                : 0
+            }
             key={`${f}-${i}`}
             width={64}
             height={character.isTall ? 128 : 64}
             src={src}
-            hidden={facing !== f || frameIndex !== i}
+            hidden={
+              facing !== f ||
+              (movementMode === MovementMode.Bicycle ? 0 : frameIndex) !== i
+            }
           />
         ))
       )}
+      {BikeFrontNodes(facing, frameIndex)}
     </Frame>
   )
 }

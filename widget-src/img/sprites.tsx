@@ -1,3 +1,5 @@
+const { widget } = figma
+const { Image } = widget
 import { Facing } from '../lib'
 import { MovementMode, movementMode } from '../movement_🛑'
 
@@ -115,33 +117,23 @@ const yeti: Character = {
   isTall: true
 }
 
-import bikeup1 from './bike/up-1.png'
-import bikeup2 from './bike/up-2.png'
-import bikeup3 from './bike/up-3.png'
-import bikedown1 from './bike/down-1.png'
-import bikedown2 from './bike/down-2.png'
-import bikedown3 from './bike/down-3.png'
+import bikedown0back from './bike/down-0-back.png'
+import bikedown0front from './bike/down-0-front.png'
+import bikedown1back from './bike/down-1-back.png'
+import bikedown1front from './bike/down-1-front.png'
+import bikeleft0 from './bike/left-0.png'
+import bikeright0 from './bike/right-0.png'
 import bikeleft1 from './bike/left-1.png'
-import bikeleft2 from './bike/left-2.png'
 import bikeright1 from './bike/right-1.png'
-import bikeright2 from './bike/right-2.png'
-
-const bike: Character = {
-  name: '',
-  sprites: {
-    up: [bikeup1, bikeup2, bikeup1, bikeup3],
-    down: [bikedown1, bikedown2, bikedown1, bikedown3],
-    left: [bikeleft1, bikeleft2],
-    right: [bikeright1, bikeright2]
-  }
-}
+import bikeup0back from './bike/up-0-back.png'
+import bikeup0front from './bike/up-0-front.png'
+import bikeup1back from './bike/up-1-back.png'
+import bikeup1front from './bike/up-1-front.png'
 
 export const selectableCharacters = [guy, girl, sheriff, robber, totoro, yeti]
 
 export function getCharacter(characterIndex: number) {
-  return movementMode === MovementMode.Bicycle
-    ? bike
-    : selectableCharacters[characterIndex]
+  return selectableCharacters[characterIndex]
 }
 
 export function getFrameIndex(
@@ -150,5 +142,139 @@ export function getFrameIndex(
 ) {
   return Math.floor(
     ((lastSpriteIndex % 12) * characterSpritesFacingLength) / 12
+  )
+}
+
+export function BikeBackNodes(facing: Facing, frameIndex: number) {
+  return (
+    <>
+      <Image
+        src={bikedown0back}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'down' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikedown1back}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'down' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeup0back}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'up' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeup1back}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'up' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+    </>
+  )
+}
+
+export function BikeFrontNodes(facing: Facing, frameIndex: number) {
+  return (
+    <>
+      <Image
+        src={bikedown0front}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'down' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikedown1front}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'down' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeup0front}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'up' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeup1front}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'up' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeleft0}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'left' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeleft1}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'left' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeright0}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'right' ||
+          frameIndex !== 0
+        }
+        width={128}
+        height={128}
+      />
+      <Image
+        src={bikeright1}
+        hidden={
+          movementMode !== MovementMode.Bicycle ||
+          facing !== 'right' ||
+          frameIndex !== 1
+        }
+        width={128}
+        height={128}
+      />
+    </>
   )
 }
