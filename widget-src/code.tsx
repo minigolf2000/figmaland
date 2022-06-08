@@ -84,6 +84,12 @@ function Widget() {
       figma.currentPage.selection = [widgetNode]
     }
 
+    if (widgetNode.locked) {
+      const lockedClone = widgetNode.cloneWidget({})
+      widgetNode.locked = false
+      figma.currentPage.appendChild(lockedClone)
+    }
+
     if (figma.viewport.zoom > 1) {
       figma.viewport.zoom = 1
     }
