@@ -3,7 +3,7 @@ const { Image, Frame, useSyncedState, usePropertyMenu } = widget
 import { bikeZone } from './bike_zone_🚲'
 import {
   selectableCharacters,
-  getCharacterSprites,
+  getCharacter,
   getFrameIndex
 } from './img/sprites'
 import { Facing, toRect } from './lib'
@@ -68,14 +68,14 @@ function Widget() {
     )
     setCharacterIndex(newCharacterIndex)
     setFacing(
-      getCharacterSprites(newCharacterIndex).down.length > 0 ? 'down' : 'right'
+      getCharacter(newCharacterIndex).sprites.down.length > 0 ? 'down' : 'right'
     )
   })
 
-  const characterSprites = getCharacterSprites(characterIndex)
+  const character = getCharacter(characterIndex)
   const [facing, setFacing] = useSyncedState<Facing>(
     'facing',
-    characterSprites.down.length > 0 ? 'down' : 'right'
+    character.sprites.down.length > 0 ? 'down' : 'right'
   )
 
   const activate = () => {
@@ -113,7 +113,7 @@ function Widget() {
         setFacing,
         lastSpriteIndex,
         collisionRects,
-        characterHasUpDownSprites: characterSprites.down.length > 0
+        characterHasUpDownSprites: character.sprites.down.length > 0
       })
       animatedArt(
         widgetId,
@@ -139,20 +139,20 @@ function Widget() {
 
   const frameIndex = getFrameIndex(
     lastSpriteIndex,
-    characterSprites[facing].length
+    character.sprites[facing].length
   )
 
   // Render all the <Image /> tags for a character
   // Use visibility to toggle which is visible, to avoid a
   // memory leak / race condition in Fullscreen image loading code
   return (
-    <Frame width={64} height={64} onClick={activate}>
+    <Frame width={64} height={character.isTall ? 128 : 64} onClick={activate}>
       {(['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
-        characterSprites[f].map((src: string, i: number) => (
+        character.sprites[f].map((src: string, i: number) => (
           <Image
             key={`${f}-${i}`}
             width={64}
-            height={64}
+            height={character.isTall ? 128 : 64}
             src={src}
             hidden={facing !== f || frameIndex !== i}
           />

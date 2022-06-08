@@ -5,6 +5,7 @@ type CharacterSprites = { [T in Facing]: string[] }
 interface Character {
   name: string
   sprites: CharacterSprites
+  isTall?: boolean
 }
 
 import girlback1 from './girl1/Girlback1.png'
@@ -94,6 +95,26 @@ const totoro: Character = {
   }
 }
 
+import yetileft0 from './yeti/left-0.png'
+import yetileft1 from './yeti/left-1.png'
+import yetileft2 from './yeti/left-2.png'
+import yetileft3 from './yeti/left-3.png'
+import yetiright0 from './yeti/right-0.png'
+import yetiright1 from './yeti/right-1.png'
+import yetiright2 from './yeti/right-2.png'
+import yetiright3 from './yeti/right-3.png'
+
+const yeti: Character = {
+  name: 'Yeti by Kenrick Rilee',
+  sprites: {
+    up: [],
+    down: [],
+    left: [yetileft0, yetileft1, yetileft2, yetileft3],
+    right: [yetiright0, yetiright1, yetiright2, yetiright3]
+  },
+  isTall: true
+}
+
 import bikeup1 from './bike/up-1.png'
 import bikeup2 from './bike/up-2.png'
 import bikeup3 from './bike/up-3.png'
@@ -115,12 +136,12 @@ const bike: Character = {
   }
 }
 
-export const selectableCharacters = [guy, girl, sheriff, robber, totoro]
+export const selectableCharacters = [guy, girl, sheriff, robber, totoro, yeti]
 
-export function getCharacterSprites(characterIndex: number) {
+export function getCharacter(characterIndex: number) {
   return movementMode === MovementMode.Bicycle
-    ? bike.sprites
-    : selectableCharacters[characterIndex].sprites
+    ? bike
+    : selectableCharacters[characterIndex]
 }
 
 export function getFrameIndex(
