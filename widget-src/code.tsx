@@ -21,6 +21,7 @@ const FPS = 30
 let cachedLastSpriteIndex = 0
 let cachedFrameIndex = 0
 let cachedCharacterIndex = 0
+let cachedFacing: Facing = 'down'
 
 // TODO: do we need to quadtree this stuff, or just iterate thru all nodes for now
 const animatedArtNodes: (FrameNode | GroupNode)[] = []
@@ -81,6 +82,7 @@ function Widget() {
     'facing',
     character.sprites.down.length > 0 ? 'down' : 'right'
   )
+  cachedFacing = facing
 
   const activate = () => {
     const widgetNode = figma.getNodeById(widgetId) as WidgetNode
@@ -121,7 +123,7 @@ function Widget() {
       })
       const fi = getFrameIndex(
         cachedLastSpriteIndex,
-        getCharacter(cachedCharacterIndex).sprites[facing].length
+        getCharacter(cachedCharacterIndex).sprites[cachedFacing].length
       )
 
       if (fi !== cachedFrameIndex) {
@@ -151,18 +153,19 @@ function Widget() {
     return new Promise<void>(() => {})
   }
 
+  let frameHeight = 64
+  if (movementMode === MovementMode.Bicycle) frameHeight += 64
+  if (character.isTall) frameHeight += 64
   // Render all the <Image /> tags for a character
   // Use visibility to toggle which is visible, to avoid a
   // memory leak / race condition in Fullscreen image loading code
   return (
     <Frame
       width={movementMode === MovementMode.Bicycle ? 128 : 64}
-      height={
-        movementMode === MovementMode.Bicycle || character.isTall ? 128 : 64
-      }
+      height={frameHeight}
       onClick={activate}
     >
-      {BikeBackNodes(facing, frameIndex)}
+      {BikeBackNodes(facing, frameIndex, !!character.isTall)}
       {(['up', 'down', 'left', 'right'] as Facing[]).map((f: Facing) =>
         character.sprites[f].map((src: string, i: number) => (
           <Image
@@ -185,7 +188,7 @@ function Widget() {
           />
         ))
       )}
-      {BikeFrontNodes(facing, frameIndex)}
+      {BikeFrontNodes(facing, frameIndex, !!character.isTall)}
     </Frame>
   )
 }

@@ -97,6 +97,27 @@ const totoro: Character = {
   }
 }
 
+import doraemondown0 from './doraemon/down-0.png'
+import doraemondown1 from './doraemon/down-1.png'
+import doraemondown2 from './doraemon/down-2.png'
+import doraemonleft0 from './doraemon/left-0.png'
+import doraemonleft1 from './doraemon/left-1.png'
+import doraemonright0 from './doraemon/right-0.png'
+import doraemonright1 from './doraemon/right-1.png'
+import doraemonup0 from './doraemon/up-0.png'
+import doraemonup2 from './doraemon/up-2.png'
+import doraemonup1 from './doraemon/up-1.png'
+
+const doraemon: Character = {
+  name: 'doraemon by Jessie Mao',
+  sprites: {
+    up: [doraemonup0, doraemonup1, doraemonup2, doraemonup1],
+    down: [doraemondown0, doraemondown1, doraemondown2, doraemondown1],
+    left: [doraemonleft0, doraemonleft1],
+    right: [doraemonright0, doraemonright1]
+  }
+}
+
 import yetileft0 from './yeti/left-0.png'
 import yetileft1 from './yeti/left-1.png'
 import yetileft2 from './yeti/left-2.png'
@@ -130,7 +151,15 @@ import bikeup0front from './bike/up-0-front.png'
 import bikeup1back from './bike/up-1-back.png'
 import bikeup1front from './bike/up-1-front.png'
 
-export const selectableCharacters = [guy, girl, sheriff, robber, totoro, yeti]
+export const selectableCharacters = [
+  guy,
+  girl,
+  sheriff,
+  robber,
+  totoro,
+  yeti,
+  doraemon
+]
 
 export function getCharacter(characterIndex: number) {
   return selectableCharacters[characterIndex]
@@ -145,10 +174,16 @@ export function getFrameIndex(
   )
 }
 
-export function BikeBackNodes(facing: Facing, frameIndex: number) {
+export function BikeBackNodes(
+  facing: Facing,
+  frameIndex: number,
+  isTall: boolean
+) {
+  frameIndex = frameIndex % 2
   return (
     <>
       <Image
+        y={isTall ? 64 : 0}
         src={bikedown0back}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -159,6 +194,7 @@ export function BikeBackNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikedown1back}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -169,6 +205,7 @@ export function BikeBackNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeup0back}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -179,6 +216,7 @@ export function BikeBackNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeup1back}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -192,10 +230,16 @@ export function BikeBackNodes(facing: Facing, frameIndex: number) {
   )
 }
 
-export function BikeFrontNodes(facing: Facing, frameIndex: number) {
+export function BikeFrontNodes(
+  facing: Facing,
+  frameIndex: number,
+  isTall: boolean
+) {
+  frameIndex = frameIndex % 2
   return (
     <>
       <Image
+        y={isTall ? 64 : 0}
         src={bikedown0front}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -206,6 +250,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikedown1front}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -216,6 +261,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeup0front}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -226,6 +272,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeup1front}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -236,6 +283,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeleft0}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -246,6 +294,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeleft1}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -256,6 +305,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeright0}
         hidden={
           movementMode !== MovementMode.Bicycle ||
@@ -266,6 +316,7 @@ export function BikeFrontNodes(facing: Facing, frameIndex: number) {
         height={128}
       />
       <Image
+        y={isTall ? 64 : 0}
         src={bikeright1}
         hidden={
           movementMode !== MovementMode.Bicycle ||
