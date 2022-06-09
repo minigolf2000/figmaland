@@ -75,14 +75,10 @@ export function movement(props: {
     return lastSpriteIndex
   }
 
-  // handle cursor position not found
-  if (!figma.activeUsers[0].position) {
-    throw 'no cursor position found'
-  }
-  const attemptedMovementVector = getMovementDirectionVector(
-    widgetRect,
-    figma.activeUsers[0].position
-  )
+  const attemptedMovementVector = figma.activeUsers[0].position
+    ? getMovementDirectionVector(widgetRect, figma.activeUsers[0].position)
+    : { x: 0, y: 0 }
+
   setFacing(
     getFacingFromMovementDirection(
       attemptedMovementVector,
@@ -114,7 +110,7 @@ export function movement(props: {
       currentViewportCenter = midpoint(widgetRect)
     }
 
-    return (lastSpriteIndex + 1) % 120 // a number that is divisible by 2 and 3
+    return (lastSpriteIndex + 1) % 12 // a number that is divisible by 2 and 3
   } else {
     // Returning 0 here forces the same neutral stance frame when not moving
     return 0

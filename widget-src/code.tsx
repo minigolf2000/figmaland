@@ -18,10 +18,9 @@ export const DEBUG = false // Add options to debug the widget
 
 const FPS = 30
 
-// How does the char know to alternate steps at all if this is not useSyncedState?
-// If I try putting frameIndex in syncedState I see this error:
-// in setSyncedState: Cannot call setSyncedState while widget is rendering.
-let lastSpriteIndex = 0
+let cachedLastSpriteIndex = 0
+let cachedFrameIndex = 0
+let cachedCharacterIndex = 0
 
 // TODO: do we need to quadtree this stuff, or just iterate thru all nodes for now
 const animatedArtNodes: (FrameNode | GroupNode)[] = []
@@ -59,7 +58,9 @@ function Widget() {
     'characterIndex',
     0
   )
+  cachedCharacterIndex = characterIndex
   const [atHome, setAtHome] = useSyncedState<boolean>('atHome', false)
+  const [frameIndex, setFrameIndex] = useSyncedState<number>('frameIndex', 0)
   // const [inCart, setInCart] = useSyncedState<boolean>('inCart', false)
 
   const propertyMenu: WidgetPropertyMenuItem[] = atHome
@@ -110,14 +111,24 @@ function Widget() {
 
     const myInterval = setInterval(() => {
       const widgetRect = toRect(widgetNode)
-      lastSpriteIndex = movement({
+      cachedLastSpriteIndex = movement({
         widgetNode,
         widgetRect,
         setFacing,
-        lastSpriteIndex,
+        lastSpriteIndex: cachedLastSpriteIndex,
         collisionRects,
         characterHasUpDownSprites: character.sprites.down.length > 0
       })
+      const fi = getFrameIndex(
+        cachedLastSpriteIndex,
+        getCharacter(cachedCharacterIndex).sprites[facing].length
+      )
+
+      if (fi !== cachedFrameIndex) {
+        cachedFrameIndex = fi
+        setFrameIndex(fi)
+      }
+
       animatedArt(
         widgetId,
         widgetRect,
@@ -139,11 +150,6 @@ function Widget() {
 
     return new Promise<void>(() => {})
   }
-
-  const frameIndex = getFrameIndex(
-    lastSpriteIndex,
-    character.sprites[facing].length
-  )
 
   // Render all the <Image /> tags for a character
   // Use visibility to toggle which is visible, to avoid a
