@@ -1,7 +1,13 @@
-import { isOverlapping } from './lib'
+// Animated art loops an animation when a player is nearby
+// currentAnimations holds all running animations and metadata about how to update them
 
-// Animated art loops an animation when a
-// player is nearby
+// TODO: there is a bug rn where if a player is within range of an animation
+// and they close their tab before exiting the plugin, `animation` pluginData will
+// be stuck on the animation node. And it will never animate again
+// I think we can do something with timestamp here, like if we detect that an
+// animation node hasn't been updated in 5s, just assume it's borked and is free
+// to animate again
+import { isOverlapping } from './lib'
 const ANIMATE_ONCE_EVERY_N_FRAMES = 5
 
 export function animatedArt(
@@ -111,7 +117,8 @@ function incrementAnimations() {
   }
 }
 
-// TODO(golf): this will probably crash if animated art nodes are edited while widget is running. This is fine
+// TODO(golf): this will probably crash if animated art nodes are edited to gain or lose children
+// while widget is running. This is fine
 
 figma.on('close', () => {
   for (const nodeId of Object.keys(currentAnimations)) {

@@ -9,8 +9,6 @@ export function isOverlapping(a: Rect, b: Rect) {
   )
 }
 
-// TODO: use absoluteRenderBounds?
-
 // Convert a SceneNode to Rect. Repeatedly accessing SceneNode properties
 // is expensive, so if we need to access these multiple times it's more
 // performant to first clone a Rect that has these properties

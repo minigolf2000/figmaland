@@ -14,10 +14,11 @@ import { animatedArt } from './animated_art_⏱'
 import { midpoint } from './vector'
 import { home, homePropertyMenuItem } from './home_🏠'
 
-export const DEBUG = false // Add options to debug the widget
-
 const FPS = 30
 
+// These cached values are read within the `activate` function. If we don't cache it,
+// the usedSyncedState values within the context of that function are always stale
+// and have the same value when the widget originally started running
 let cachedLastSpriteIndex = 0
 let cachedFrameIndex = 0
 let cachedCharacterIndex = 0
@@ -62,7 +63,6 @@ function Widget() {
   cachedCharacterIndex = characterIndex
   const [atHome, setAtHome] = useSyncedState<boolean>('atHome', false)
   const [frameIndex, setFrameIndex] = useSyncedState<number>('frameIndex', 0)
-  // const [inCart, setInCart] = useSyncedState<boolean>('inCart', false)
 
   const propertyMenu: WidgetPropertyMenuItem[] = atHome
     ? [homePropertyMenuItem(characterIndex)]
@@ -193,5 +193,3 @@ function Widget() {
   )
 }
 widget.register(Widget)
-
-// how to respond to selection change
