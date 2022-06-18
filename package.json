@@ -1,7 +1,7 @@
 {
-  "name": "figma-gather",
+  "name": "figmaland",
   "version": "1.0.0",
-  "description": "figma-gather",
+  "description": "figmaland",
   "scripts": {
     "test": "npm run tsc && npm run build",
     "format": "prettier --write .",
