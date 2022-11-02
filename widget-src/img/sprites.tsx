@@ -97,6 +97,48 @@ const totoro: Character = {
   }
 }
 
+import totorodetectivedown0 from './totoro-detective/down-0.png'
+import totorodetectiveleft0 from './totoro-detective/left-0.png'
+import totorodetectiveright0 from './totoro-detective/right-0.png'
+import totorodetectiveup0 from './totoro-detective/up-0.png'
+import totorodetectivedown1 from './totoro-detective/down-1.png'
+import totorodetectiveleft1 from './totoro-detective/left-1.png'
+import totorodetectiveright1 from './totoro-detective/right-1.png'
+import totorodetectiveup1 from './totoro-detective/up-1.png'
+
+const totoroDetective: Character = {
+  name: 'Totoro Detective by Jessie Mao',
+  sprites: {
+    up: [totorodetectiveup0, totorodetectiveup1],
+    down: [totorodetectivedown0, totorodetectivedown1],
+    left: [totorodetectiveleft0, totorodetectiveleft1],
+    right: [totorodetectiveright0, totorodetectiveright1]
+  }
+}
+
+import bodhidown0 from './bodhi/down-0.png'
+import bodhileft0 from './bodhi/left-0.png'
+import bodhiright0 from './bodhi/right-0.png'
+import bodhiup0 from './bodhi/up-0.png'
+import bodhidown1 from './bodhi/down-1.png'
+import bodhileft1 from './bodhi/left-1.png'
+import bodhiright1 from './bodhi/right-1.png'
+import bodhiup1 from './bodhi/up-1.png'
+import bodhileft2 from './bodhi/left-2.png'
+import bodhiright2 from './bodhi/right-2.png'
+import bodhileft3 from './bodhi/left-3.png'
+import bodhiright3 from './bodhi/right-3.png'
+
+const bodhi: Character = {
+  name: 'Samoyed in Doc Martens by Lizhi Fan',
+  sprites: {
+    up: [bodhiup0, bodhiup1],
+    down: [bodhidown0, bodhidown1],
+    left: [bodhileft0, bodhileft1, bodhileft2, bodhileft3],
+    right: [bodhiright0, bodhiright1, bodhiright2, bodhiright3]
+  }
+}
+
 import doraemondown0 from './doraemon/down-0.png'
 import doraemondown1 from './doraemon/down-1.png'
 import doraemondown2 from './doraemon/down-2.png'
@@ -138,6 +180,25 @@ const yeti: Character = {
   isTall: true
 }
 
+import pikachudown0 from './pikachu/down-0.png'
+import pikachuleft0 from './pikachu/left-0.png'
+import pikachuright0 from './pikachu/right-0.png'
+import pikachuup0 from './pikachu/up-0.png'
+import pikachudown1 from './pikachu/down-1.png'
+import pikachuleft1 from './pikachu/left-1.png'
+import pikachuright1 from './pikachu/right-1.png'
+import pikachuup1 from './pikachu/up-1.png'
+
+const pikachu: Character = {
+  name: 'Pikachu by Annie Chen',
+  sprites: {
+    up: [pikachuup0, pikachuup1],
+    down: [pikachudown0, pikachudown1],
+    left: [pikachuleft0, pikachuleft1],
+    right: [pikachuright0, pikachuright1]
+  }
+}
+
 import bikedown0back from './bike/down-0-back.png'
 import bikedown0front from './bike/down-0-front.png'
 import bikedown1back from './bike/down-1-back.png'
@@ -158,7 +219,10 @@ export const selectableCharacters = [
   robber,
   totoro,
   yeti,
-  doraemon
+  doraemon,
+  totoroDetective,
+  bodhi,
+  pikachu
 ]
 
 export function getCharacter(characterIndex: number) {
