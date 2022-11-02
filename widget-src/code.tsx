@@ -13,6 +13,7 @@ import { movement, MovementMode, movementMode } from './movement_🛑'
 import { animatedArt } from './animated_art_⏱'
 import { midpoint } from './vector'
 import { home, homePropertyMenuItem } from './home_🏠'
+import { subway } from './subway_🚇'
 
 const FPS = 30
 
@@ -31,6 +32,7 @@ const animatedArtIds: string[] = []
 const collisionRects: Rect[] = []
 const homeRects: Rect[] = []
 const bikeZoneRects: Rect[] = []
+const subwayRects: { [line: string]: { in?: Rect; out?: Rect } } = {}
 
 function gatherNodes() {
   const nodes = figma.currentPage.findAll(() => true)
@@ -49,7 +51,18 @@ function gatherNodes() {
       homeRects.push(toRect(n))
     }
     if (nodeName.slice(0, 2) === '🚲') {
-      bikeZoneRects.push(n)
+      bikeZoneRects.push(toRect(n))
+    }
+    if (nodeName.slice(0, 2) === '🚇') {
+      const line = nodeName[2]
+      if (!subwayRects[line]) {
+        subwayRects[line] = {}
+      }
+      if (nodeName.slice(3, 6) === 'out') {
+        subwayRects[line].out = toRect(n)
+      } else {
+        subwayRects[line].in = toRect(n)
+      }
     }
   }
 }
@@ -140,6 +153,7 @@ function Widget() {
       )
       bikeZone(widgetRect, bikeZoneRects)
       home(widgetRect, homeRects, setAtHome)
+      subway(subwayRects, widgetRect, widgetNode)
     }, 1000 / FPS)
 
     figma.on('close', () => {
