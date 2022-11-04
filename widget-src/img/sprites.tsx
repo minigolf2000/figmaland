@@ -78,6 +78,118 @@ const robber: Character = {
   }
 }
 
+import crowleft0 from './crow/left-0.png'
+import crowright0 from './crow/right-0.png'
+import crowleft1 from './crow/left-1.png'
+import crowright1 from './crow/right-1.png'
+import crowleft2 from './crow/left-2.png'
+import crowright2 from './crow/right-2.png'
+
+const crow: Character = {
+  name: 'Crow by Lucy Huo',
+  sprites: {
+    left: [crowleft0, crowleft1, crowleft2],
+    right: [crowright0, crowright1, crowright2],
+    up: [],
+    down: []
+  }
+}
+
+import girldetectiveadown0 from './girl-detective-a/down-0.png'
+import girldetectivealeft0 from './girl-detective-a/left-0.png'
+import girldetectivearight0 from './girl-detective-a/right-0.png'
+import girldetectiveaup0 from './girl-detective-a/up-0.png'
+import girldetectiveadown1 from './girl-detective-a/down-1.png'
+import girldetectivealeft1 from './girl-detective-a/left-1.png'
+import girldetectivearight1 from './girl-detective-a/right-1.png'
+import girldetectiveaup1 from './girl-detective-a/up-1.png'
+
+const girlDetectiveA: Character = {
+  name: 'Girl Detective A by Annie Chen',
+  sprites: {
+    up: [girldetectiveaup0, girldetectiveaup1],
+    down: [girldetectiveadown0, girldetectiveadown1],
+    left: [girldetectivealeft0, girldetectivealeft1],
+    right: [girldetectivearight0, girldetectivearight1]
+  }
+}
+
+import girldetectivebdown0 from './girl-detective-b/down-0.png'
+import girldetectivebleft0 from './girl-detective-b/left-0.png'
+import girldetectivebright0 from './girl-detective-b/right-0.png'
+import girldetectivebup0 from './girl-detective-b/up-0.png'
+import girldetectivebdown1 from './girl-detective-b/down-1.png'
+import girldetectivebleft1 from './girl-detective-b/left-1.png'
+import girldetectivebright1 from './girl-detective-b/right-1.png'
+import girldetectivebup1 from './girl-detective-b/up-1.png'
+
+const girlDetectiveB: Character = {
+  name: 'Girl Detective B by Annie Chen',
+  sprites: {
+    up: [girldetectivebup0, girldetectivebup1],
+    down: [girldetectivebdown0, girldetectivebdown1],
+    left: [girldetectivebleft0, girldetectivebleft1],
+    right: [girldetectivebright0, girldetectivebright1]
+  }
+}
+
+import girldetectivecdown0 from './girl-detective-c/down-0.png'
+import girldetectivecleft0 from './girl-detective-c/left-0.png'
+import girldetectivecright0 from './girl-detective-c/right-0.png'
+import girldetectivecup0 from './girl-detective-c/up-0.png'
+import girldetectivecdown1 from './girl-detective-c/down-1.png'
+import girldetectivecleft1 from './girl-detective-c/left-1.png'
+import girldetectivecright1 from './girl-detective-c/right-1.png'
+import girldetectivecup1 from './girl-detective-c/up-1.png'
+
+const girlDetectiveC: Character = {
+  name: 'Girl Detective C by Annie Chen',
+  sprites: {
+    up: [girldetectivecup0, girldetectivecup1],
+    down: [girldetectivecdown0, girldetectivecdown1],
+    left: [girldetectivecleft0, girldetectivecleft1],
+    right: [girldetectivecright0, girldetectivecright1]
+  }
+}
+
+import girldetectiveddown0 from './girl-detective-d/down-0.png'
+import girldetectivedleft0 from './girl-detective-d/left-0.png'
+import girldetectivedright0 from './girl-detective-d/right-0.png'
+import girldetectivedup0 from './girl-detective-d/up-0.png'
+import girldetectiveddown1 from './girl-detective-d/down-1.png'
+import girldetectivedleft1 from './girl-detective-d/left-1.png'
+import girldetectivedright1 from './girl-detective-d/right-1.png'
+import girldetectivedup1 from './girl-detective-d/up-1.png'
+
+const girlDetectiveD: Character = {
+  name: 'Girl Detective D by Annie Chen',
+  sprites: {
+    up: [girldetectivedup0, girldetectivedup1],
+    down: [girldetectiveddown0, girldetectiveddown1],
+    left: [girldetectivedleft0, girldetectivedleft1],
+    right: [girldetectivedright0, girldetectivedright1]
+  }
+}
+
+import girldetectiveedown0 from './girl-detective-e/down-0.png'
+import girldetectiveeleft0 from './girl-detective-e/left-0.png'
+import girldetectiveeright0 from './girl-detective-e/right-0.png'
+import girldetectiveeup0 from './girl-detective-e/up-0.png'
+import girldetectiveedown1 from './girl-detective-e/down-1.png'
+import girldetectiveeleft1 from './girl-detective-e/left-1.png'
+import girldetectiveeright1 from './girl-detective-e/right-1.png'
+import girldetectiveeup1 from './girl-detective-e/up-1.png'
+
+const girlDetectiveE: Character = {
+  name: 'Girl Detective E by Annie Chen',
+  sprites: {
+    up: [girldetectiveeup0, girldetectiveeup1],
+    down: [girldetectiveedown0, girldetectiveedown1],
+    left: [girldetectiveeleft0, girldetectiveeleft1],
+    right: [girldetectiveeright0, girldetectiveeright1]
+  }
+}
+
 import totorodown0 from './totoro/down-0.png'
 import totoroleft0 from './totoro/left-0.png'
 import totororight0 from './totoro/right-0.png'
@@ -132,8 +244,8 @@ import bodhiright3 from './bodhi/right-3.png'
 const bodhi: Character = {
   name: 'Samoyed in Doc Martens by Lizhi Fan',
   sprites: {
-    up: [bodhiup0, bodhiup1],
-    down: [bodhidown0, bodhidown1],
+    up: [bodhiup0, bodhiup1, bodhiup0, bodhiup1],
+    down: [bodhidown0, bodhidown1, bodhidown0, bodhidown1],
     left: [bodhileft0, bodhileft1, bodhileft2, bodhileft3],
     right: [bodhiright0, bodhiright1, bodhiright2, bodhiright3]
   }
@@ -222,7 +334,13 @@ export const selectableCharacters = [
   doraemon,
   totoroDetective,
   bodhi,
-  pikachu
+  pikachu,
+  crow,
+  girlDetectiveA,
+  girlDetectiveB,
+  girlDetectiveC,
+  girlDetectiveD,
+  girlDetectiveE
 ]
 
 export function getCharacter(characterIndex: number) {

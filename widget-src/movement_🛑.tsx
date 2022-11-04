@@ -69,9 +69,7 @@ export function movement(props: {
   // Character gets deselected. Exit
   if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
     setFacing(characterHasUpDownSprites ? 'down' : 'right')
-    figma.closePlugin(
-      'Character is no longer selected and has stopped moving. Click character to resume'
-    )
+    figma.closePlugin()
     return lastSpriteIndex
   }
 
