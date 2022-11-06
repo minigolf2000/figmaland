@@ -120,7 +120,8 @@ function Widget() {
     figma.viewport.center = midpoint(widgetNode) // update camera
     gatherNodes()
     const index = figma.currentPage.children.findIndex(
-      (n) => n.name === '--- running widgets ---'
+      // Support '--- running widgets ---' for backwards compat
+      (n) => n.name[0] === '↔' || n.name === '--- running widgets ---'
     )
     if (index !== -1) widgetNode.parent?.insertChild(index, widgetNode)
 
