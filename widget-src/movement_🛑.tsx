@@ -52,27 +52,6 @@ export function movement(props: {
     characterHasUpDownSprites
   } = props
 
-  // User has panned their camera, let them pan and exit the widget to stop character movement
-  // if (
-  //   // todo: does this need to account for zoom level?
-  //   distance(figma.viewport.center, midpoint(widgetNode)) >
-  //   movementMaxSpeed() * 10
-  // ) {
-  //   figma.currentPage.selection = []
-  //   setFacing(characterHasUpDownSprites ? 'down' : 'right')
-  //   figma.closePlugin(
-  //     'Stopping character movement to allow free camera. Click character to resume'
-  //   )
-  //   return lastSpriteIndex
-  // }
-
-  // Character gets deselected. Exit
-  if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
-    setFacing(characterHasUpDownSprites ? 'down' : 'right')
-    figma.closePlugin()
-    return lastSpriteIndex
-  }
-
   const attemptedMovementVector = figma.activeUsers[0].position
     ? getMovementDirectionVector(widgetRect, figma.activeUsers[0].position)
     : { x: 0, y: 0 }

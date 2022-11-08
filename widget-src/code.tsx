@@ -127,13 +127,22 @@ function Widget() {
 
     const myInterval = setInterval(() => {
       const widgetRect = toRect(widgetNode)
+      const characterHasUpDownSprites = character.sprites.down.length > 0
+
+      // Character gets deselected. Exit
+      if (figma.currentPage.selection.toString() !== [widgetNode].toString()) {
+        setFacing(characterHasUpDownSprites ? 'down' : 'right')
+        figma.closePlugin()
+        return
+      }
+
       cachedLastSpriteIndex = movement({
         widgetNode,
         widgetRect,
         setFacing,
         lastSpriteIndex: cachedLastSpriteIndex,
         collisionRects,
-        characterHasUpDownSprites: character.sprites.down.length > 0
+        characterHasUpDownSprites
       })
       const fi = getFrameIndex(
         cachedLastSpriteIndex,

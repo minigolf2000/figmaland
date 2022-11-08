@@ -87,7 +87,7 @@ interface AnimationState {
   numAnimationFrames: number
   animationNode: FrameNode | GroupNode
 }
-let currentAnimations: { [nodeId: string]: AnimationState } = {}
+const currentAnimations: { [nodeId: string]: AnimationState } = {}
 
 function incrementAnimations() {
   for (const nodeId of Object.keys(currentAnimations)) {
@@ -116,9 +116,6 @@ function incrementAnimations() {
     }
   }
 }
-
-// TODO(golf): this will probably crash if animated art nodes are edited to gain or lose children
-// while widget is running. This is fine
 
 figma.on('close', () => {
   for (const nodeId of Object.keys(currentAnimations)) {
